@@ -61,6 +61,21 @@ export function useEscapeRoomGame(level) {
     [activePuzzleObject, hintProgress.level],
   )
 
+  const playSound = (soundType) => {
+    const soundUrls = {
+      click: '/assets/sounds/click.mp3',
+      success: '/assets/sounds/success.mp3',
+      error: '/assets/sounds/error.mp3',
+      unlocked: '/assets/sounds/unlocked.mp3',
+      hint: '/assets/sounds/hint.mp3',
+    }
+
+    const audio = new Audio(soundUrls[soundType])
+    audio.play().catch(() => {
+      // Ignore errors if sound can't be played (common for browsers)
+    })
+  }
+
   function flashFeedback(message, type = 'info') {
     setToastKey((previous) => previous + 1)
     setFeedback({
@@ -101,6 +116,7 @@ export function useEscapeRoomGame(level) {
       return
     }
 
+    playSound('click')
     openTargetPuzzle(objectId)
   }
 
@@ -118,6 +134,7 @@ export function useEscapeRoomGame(level) {
 
   function revealHints() {
     if (hintProgress.level === 0) {
+      playSound('hint')
       setHintProgress((previous) => ({
         ...previous,
         level: 1,
@@ -126,6 +143,7 @@ export function useEscapeRoomGame(level) {
   }
 
   function goToNextHint() {
+    playSound('click')
     setHintProgress((previous) => ({
       ...previous,
       level: unlockNextHint({
@@ -142,6 +160,7 @@ export function useEscapeRoomGame(level) {
     }
 
     if (checkMiniHintAnswer(currentHint, miniHintAnswer)) {
+      playSound('success')
       setHintProgress((previous) => ({
         ...previous,
         miniSolved: true,
@@ -150,6 +169,7 @@ export function useEscapeRoomGame(level) {
       return
     }
 
+    playSound('error')
     flashFeedback("Almost there. Try the mini-question one more time.", 'error')
     triggerWrongPulse()
   }
@@ -160,6 +180,7 @@ export function useEscapeRoomGame(level) {
     }
 
     if (!checkMainAnswer(activePuzzleObject.puzzle, puzzleAnswer)) {
+      playSound('error')
       flashFeedback("Try again - you're close!", 'error')
       triggerWrongPulse()
       return
@@ -174,6 +195,7 @@ export function useEscapeRoomGame(level) {
     setSolvedObjects(nextSolvedObjects)
     setCollectedDigits((previousDigits) => awardDigitToSlot(level, objectId, previousDigits))
     setCelebrationObjectId(objectId)
+    playSound('success')
     window.clearTimeout(submitPuzzleAnswer.celebrationTimeoutId)
     submitPuzzleAnswer.celebrationTimeoutId = window.setTimeout(() => {
       setCelebrationObjectId(null)
@@ -225,6 +247,7 @@ export function useEscapeRoomGame(level) {
 
   function verifyDoorCode() {
     if (!attemptDoorUnlock(doorCodeInput, level.doorCode)) {
+      playSound('error')
       flashFeedback("That code didn't work yet. Check your key digits.", 'error')
       triggerWrongPulse()
       return
@@ -233,6 +256,7 @@ export function useEscapeRoomGame(level) {
     setDoorUnlocked(true)
     setGameCompleted(true)
     setShowDoorPanel(false)
+    playSound('unlocked')
     flashFeedback('You escaped the room!', 'success')
   }
 
