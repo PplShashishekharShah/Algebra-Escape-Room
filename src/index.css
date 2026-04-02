@@ -3,15 +3,17 @@
 @tailwind utilities;
 
 :root {
-  color: #243b53;
+  color: #1a2a3a;
   background:
     radial-gradient(circle at top, rgba(255, 243, 173, 0.85), transparent 35%),
     linear-gradient(180deg, #98d8f4 0%, #6e9cc8 38%, #22304e 100%);
   font-family: "Verdana", ui-sans-serif, system-ui;
+  cursor: url('/assets/hand_emoji.png') 16 16, auto;
 }
 
 * {
   box-sizing: border-box;
+  cursor: inherit;
 }
 
 html,
@@ -180,14 +182,33 @@ input {
 }
 
 /* Room Objects (Clues) */
+
+.clue-book {
+  left: 10% !important;
+  top: 52% !important;
+}
+
+.clue-box {
+  left: 8% !important;
+  top: 88% !important;
+  scale: 1.5 !important;
+}
+
+.clue-envelope {
+  left: 28% !important;
+  top: 52% !important;
+}
+
 .room-object-btn {
   position: absolute;
   transform: translate(-50%, -50%);
-  transition: transform 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
 }
 
 .room-object-btn:hover {
-  transform: translate(-50%, -50%) scale(1.1);
+  transform: translate(-50%, -50%) scale(1.15);
+  filter: brightness(1.2) drop-shadow(0 10px 20px rgba(0,0,0,0.4));
 }
 
 .room-object-img {
@@ -199,6 +220,43 @@ input {
 }
 
 .room-object-solved {
-  scale: 0.95;
-  opacity: 0.75;
+  scale: 0.85;
+  opacity: 0.5;
+  filter: grayscale(0.5) contrast(0.8);
+}
+
+/* Typography Modernization */
+h1, h2, h3, .font-display {
+  font-weight: 900 !important;
+  color: #0f172a;
+}
+
+p, span, div, button, input {
+  font-weight: 900 !important;
+  color: #1a2a3a;
+}
+
+.text-xs { font-size: 0.975rem !important; }
+.text-\[10px\], .text-\[11px\] { font-size: 0.8rem !important; }
+.text-sm { font-size: 1rem !important; }
+.text-base { font-size: 1.125rem !important; }
+.text-lg { font-size: 1.35rem !important; }
+.text-xl { font-size: 1.6rem !important; }
+.text-2xl { font-size: 2rem !important; }
+.text-3xl { font-size: 2.5rem !important; }
+
+/* Global Glow Fix */
+.object-glow {
+  pointer-events: none;
+  position: absolute;
+  left: 0%;
+  top: -15%;
+  width: 160%;
+  height: 160%;
+  /* transform: translate(-50%, -50%); */
+  object-fit: contain;
+  opacity: 0.85;
+  scale: 1.6 !important;
+  mix-blend-mode: color-dodge;
+  filter: blur(3px);
 }

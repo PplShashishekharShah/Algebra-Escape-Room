@@ -14,10 +14,8 @@ function RoomObject({
     <button
       type="button"
       onClick={() => onClick(objectData.id)}
-      className="room-object-btn group"
+      className={`room-object-btn group clue-${objectData.id}`}
       style={{
-        left,
-        top,
         width: `${width}px`,
         height: `${height}px`,
       }}
@@ -27,7 +25,7 @@ function RoomObject({
         <img
           src="/assets/Glow Effect.png"
           alt=""
-          className="pointer-events-none absolute left-1/2 top-1/2 h-[170%] w-[170%] -translate-x-1/2 -translate-y-1/2 animate-pulseGlow object-contain opacity-90"
+          className="object-glow animate-pulseGlow"
         />
       ) : null}
 
