@@ -1,0 +1,104 @@
+{
+  "id": "level-1",
+  "name": "Escape Room 1",
+  "doorCode": [5, 4, 8],
+  "objectsOrder": ["book", "box", "envelope"],
+  "objects": [
+    {
+      "id": "book",
+      "label": "Book",
+      "asset": "Book (Knowledge Object).png",
+      "position": { "x": 165, "y": 505 },
+      "topHintText": "I hold knowledge inside me... find me.",
+      "digitReward": 5,
+      "puzzle": {
+        "question": "3x + 5 = 20",
+        "answer": 5,
+        "answerType": "number",
+        "hints": [
+          {
+            "level": 1,
+            "type": "text",
+            "content": "Try moving +5 to the other side."
+          },
+          {
+            "level": 2,
+            "type": "miniQuestion",
+            "question": "x + 5 = 20",
+            "answer": 15,
+            "successMessage": "Great! Now think about the original equation."
+          },
+          {
+            "level": 3,
+            "type": "stepReveal",
+            "content": "After subtracting 5 from both sides, the equation becomes 3x = 15."
+          }
+        ]
+      }
+    },
+    {
+      "id": "box",
+      "label": "Box",
+      "asset": "Box (Storage Object).png",
+      "position": { "x": 300, "y": 490 },
+      "topHintText": "I store valuable things safely... find me.",
+      "digitReward": 4,
+      "puzzle": {
+        "question": "2x + 4 = 12",
+        "answer": 4,
+        "answerType": "number",
+        "hints": [
+          {
+            "level": 1,
+            "type": "text",
+            "content": "Try subtracting 4 from both sides first."
+          },
+          {
+            "level": 2,
+            "type": "miniQuestion",
+            "question": "x + 4 = 12",
+            "answer": 8,
+            "successMessage": "Nice! Now apply that idea to the real equation."
+          },
+          {
+            "level": 3,
+            "type": "stepReveal",
+            "content": "After subtracting 4 from both sides, the equation becomes 2x = 8."
+          }
+        ]
+      }
+    },
+    {
+      "id": "envelope",
+      "label": "Envelope",
+      "asset": "Envelope (Message Object).png",
+      "position": { "x": 175, "y": 615 },
+      "topHintText": "I carry messages from one place to another... find me.",
+      "digitReward": 8,
+      "puzzle": {
+        "question": "x / 2 + 3 = 7",
+        "answer": 8,
+        "answerType": "number",
+        "hints": [
+          {
+            "level": 1,
+            "type": "text",
+            "content": "Try subtracting 3 from both sides first."
+          },
+          {
+            "level": 2,
+            "type": "miniQuestion",
+            "question": "x / 2 = 4",
+            "answer": 8,
+            "successMessage": "Good! You are very close now."
+          },
+          {
+            "level": 3,
+            "type": "stepReveal",
+            "content": "After subtracting 3 from both sides, the equation becomes x / 2 = 4."
+          }
+        ]
+      }
+    }
+  ]
+}
