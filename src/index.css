@@ -8,12 +8,20 @@
     radial-gradient(circle at top, rgba(255, 243, 173, 0.85), transparent 35%),
     linear-gradient(180deg, #98d8f4 0%, #6e9cc8 38%, #22304e 100%);
   font-family: "Verdana", ui-sans-serif, system-ui;
-  cursor: url('/assets/hand_emoji.png') 16 16, auto;
 }
 
 * {
   box-sizing: border-box;
-  cursor: inherit;
+  cursor: url('/assets/hand_emoji.png') 16 16, auto !important;
+}
+
+button, 
+input,
+a, 
+.room-object-btn, 
+.padlock-key,
+[role="button"] {
+  cursor: url('/assets/hand_emoji.png') 16 16, pointer !important;
 }
 
 html,
@@ -59,38 +67,41 @@ input {
 /* Main Hint Bar (Top Left) */
 .hint-bar-container {
   position: absolute;
-  left: 4rem; /* 8 in tailwind */
-  top: 2rem;  /* 8 in tailwind */
+  left: 2rem; /* 8 in tailwind */
+  top: 0rem;  /* 8 in tailwind */
   z-index: 20;
   width: 100%;
-  max-width: 34rem; /* md in tailwind */
+  max-width: 26rem; /* md in tailwind */
+  padding: 2px 10px;
   pointer-events: none;
 }
 
 /* Inventory Bar (Top Right) */
 .inventory-container {
   position: absolute;
-  right: -1rem; /* 8 in tailwind */
-  top: 18rem;   /* 8 in tailwind */
+  left: 27rem; /* 8 in tailwind */
+  top: 1rem;   /* 8 in tailwind */
   z-index: 20;
-  width: 20rem;
+  width: 14rem;
   /* max-width: 38rem; */
   pointer-events: none;
+  /* display: none; */
 }
 
-/* Door Lock Keypad */
+/* Door Lock Keypad (Hit Area) */
 .door-lock-button {
   position: absolute;
-  left: 63.2%;
-  top: 28.5%;
-  height: 15%;
-  width: 12.5%;
-  border-radius: 1rem;
+  left: 55.4% !important; /* Extremely precise for door lock handle */
+  top: 36.5% !important; 
+  height: 12% !important; 
+  width: 9% !important;
+  border-radius: 0.5rem;
   transition: all 0.2s;
   background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 15;
 }
 
 .door-lock-button:hover {
@@ -111,8 +122,8 @@ input {
 }
 
 .door-slot-container {
-  display: flex;
-  gap: 0.1rem;
+  /* display: flex; */
+  gap: 1rem !important;
   transform: scale(1.8);
 }
 
@@ -136,11 +147,12 @@ input {
   right: -2rem;
   max-width: 58rem;
   pointer-events: auto;
+  z-index: 100; /* Ensure it's on top */
 }
 
 .puzzle-content-area {
   position: absolute;
-  inset: 20% 12.5% 25% 15%;
+  inset: 20% 12.5% 22% 15%;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -184,7 +196,7 @@ input {
 /* Room Objects (Clues) */
 
 .clue-book {
-  left: 10% !important;
+  left: 26% !important;
   top: 52% !important;
 }
 
@@ -195,8 +207,8 @@ input {
 }
 
 .clue-envelope {
-  left: 28% !important;
-  top: 52% !important;
+  left: 38% !important;
+  top: 77% !important;
 }
 
 .room-object-btn {
@@ -245,6 +257,182 @@ p, span, div, button, input {
 .text-2xl { font-size: 2rem !important; }
 .text-3xl { font-size: 2.5rem !important; }
 
+/* Padlock / Door Code Styles */
+.padlock-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* Allow picking clues behind if needed, or we just override in container */
+}
+
+.padlock-container {
+  pointer-events: auto;
+  position: absolute;
+  left: 56%;
+  top: 34%;
+  transform: translate(-50%, -50%);
+  width: 280px; /* Precise width */
+  height: 380px; /* Precise height to avoid stretching */
+  background-image: url('/assets/Number Pad.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6));
+}
+
+.padlock-display {
+  position: absolute;
+  top: 72px;
+  left: 45px;
+  right: 45px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  z-index: 5;
+}
+
+.padlock-slot {
+  width: 50px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0,0,0,0.8);
+  background: rgba(0,0,0,0.3);
+  border-radius: 4px;
+}
+
+.padlock-grid {
+  position: absolute;
+  top: 130px; /* Align with squares on Number Pad.png */
+  left: 38px;
+  right: 38px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  height: 190px;
+}
+
+.padlock-key {
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.padlock-key:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+.padlock-key:active {
+  transform: scale(0.95);
+}
+
+.padlock-action-btn {
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 45px;
+  background: #c7952c;
+  color: #1a2a3a;
+  border-radius: 99px;
+  font-weight: 900;
+  text-transform: uppercase;
+  z-index: 10;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* Start Screen Styles */
+.start-screen-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.3); /* Transparent */
+  backdrop-filter: blur(8px); /* Blur */
+  color: white;
+}
+
+.start-screen-content {
+  text-align: center;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.game-logo {
+  width: 151px;
+  height: 151px;
+  margin-bottom: 2rem;
+  filter: drop-shadow(0 0 20px rgba(199, 149, 44, 0.6));
+}
+
+.start-button {
+  background: #c3922c;
+  color: #1a2a3a;
+  padding: 1rem 3rem;
+  font-size: 1.5rem;
+  border-radius: 99px;
+  font-weight: 900;
+  transition: all 0.3s;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  margin: 0.5rem;
+}
+
+.start-button:hover {
+  transform: scale(1.05);
+  background: #d4a645;
+}
+
+.how-to-play-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  border-radius: 99px;
+  font-weight: 700;
+  transition: all 0.3s;
+  margin: 0.5rem;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.how-to-play-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-popIn {
+  animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 /* Global Glow Fix */
 .object-glow {
   pointer-events: none;
@@ -259,4 +447,49 @@ p, span, div, button, input {
   scale: 1.6 !important;
   mix-blend-mode: color-dodge;
   filter: blur(3px);
+}
+/* Feedback / Rat / Speech Bubble */
+.feedback-rat-container {
+  position: fixed;
+  bottom: 42%;
+  left: 12px; /* Far left */
+  pointer-events: none;
+  z-index: 150;
+  display: flex;
+  align-items: flex-end;
+  transform: scale(0.7);
+  
+}
+
+.rat-character {
+  width: 180px;
+  height: auto;
+  margin-right: -20px;
+}
+
+.speech-bubble-container {
+  position: absolute;
+  width: 500px;
+  height: 280px;
+  background-image: url('/assets/speech_bubble.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  display: flex;
+  top: -150%;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 40px 40px 60px;
+  text-align: center;
+  font-weight: 900;
+  color: #1a2a3a;
+  font-size: 1rem;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }

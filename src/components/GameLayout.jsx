@@ -26,14 +26,14 @@ function GameLayout({ level, game }) {
         <InventoryBar digits={game.collectedDigits} />
       </div>
 
-      <header className="pointer-events-none absolute bottom-4 left-1/2 z-20 -translate-x-1/2 text-center opacity-80 transition hover:opacity-100">
+      {/* <header className="pointer-events-none absolute bottom-4 left-1/2 z-20 -translate-x-1/2 text-center opacity-80 transition hover:opacity-100">
         <p className="font-display text-xs uppercase tracking-[0.8em] text-white/90 font-bold">
           Algebra Escape Room
         </p>
         <h1 className="text-stroke-soft font-display text-2xl text-white">
           Crack the clues. Collect the digits. Escape.
         </h1>
-      </header>
+      </header> */}
 
       <FeedbackToast
         key={game.toastKey}

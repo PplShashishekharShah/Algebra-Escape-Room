@@ -3,16 +3,15 @@ function FeedbackToast({ message, type, visible }) {
     return null
   }
 
-  const toneClass = {
-    success: 'bg-mintplay text-inkplay',
-    error: 'bg-jam text-white',
-    info: 'bg-white text-inkplay',
-  }[type]
-
   return (
-    <div className="pointer-events-none fixed bottom-5 left-1/2 z-50 w-full max-w-md -translate-x-1/2 px-4">
-      <div className={`animate-popIn rounded-full px-5 py-3 text-center shadow-soft ${toneClass}`}>
-        {message}
+    <div className="feedback-rat-container animate-slideUp">
+      <img 
+        src="/assets/Rat_character.png" 
+        alt="Detective Rat" 
+        className="rat-character"
+      />
+      <div className="speech-bubble-container">
+        <p>{message}</p>
       </div>
     </div>
   )

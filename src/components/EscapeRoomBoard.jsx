@@ -46,22 +46,7 @@ function EscapeRoomBoard({ level, game }) {
             }`}
             aria-label="Door lock"
           >
-            <div className="door-slot-container">
-              <div className="flex gap-1 sm:gap-1.5">
-                {game.collectedDigits.map((digit, index) => (
-                  <div key={index} className="relative h-10 w-8 sm:h-16 sm:w-14">
-                    <img
-                      src="/assets/Number Slot (Empty).png"
-                      alt=""
-                      className="h-full w-full object-contain opacity-90 shadow-sm"
-                    />
-                    <span className="absolute inset-0 flex items-center justify-center font-display text-base text-white sm:text-2xl">
-                      {digit ?? '?'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Slots removed from door per user request */}
           </button>
 
         </div>
