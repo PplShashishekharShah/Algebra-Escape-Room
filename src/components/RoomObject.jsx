@@ -21,13 +21,7 @@ function RoomObject({
       }}
       aria-label={objectData.label}
     >
-      {isTarget && !isSolved ? (
-        <img
-          src="/assets/Glow Effect.png"
-          alt=""
-          className="object-glow animate-pulseGlow"
-        />
-      ) : null}
+      {/* Glow effect removed per user request to avoid giving hints */}
 
       {celebration ? (
         <img
@@ -44,7 +38,7 @@ function RoomObject({
       />
 
       {isSolved ? (
-        <div className="pointer-events-none absolute -right-4 -top-4 flex h-12 w-12 items-center justify-center rounded-full bg-mintplay shadow-lg ring-4 ring-white/80">
+        <div className="pointer-events-none absolute -right-4 -top-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#1a2a3a] shadow-lg ring-4 ring-white/80">
           <img
             src="/assets/Key (Reward Asset).png"
             alt=""

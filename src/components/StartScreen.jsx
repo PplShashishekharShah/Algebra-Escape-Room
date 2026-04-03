@@ -10,7 +10,7 @@ function StartScreen({ onStart }) {
           className="game-logo mx-auto animate-bounce"
         />
         
-        <h1 className="text-stroke-soft font-display text-5xl text-white mb-4 tracking-tight">
+        <h1 className=" font-display text-5xl text-white mb-4 tracking-tight">
           ALGEBRA ESCAPE ROOM
         </h1>
         

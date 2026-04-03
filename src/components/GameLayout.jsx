@@ -1,11 +1,8 @@
-import React from 'react'
 import DoorCodePanel from './DoorCodePanel'
 import EscapeRoomBoard from './EscapeRoomBoard'
 import NarrationSystem from './FeedbackToast'
 import InventoryBar from './InventoryBar'
 import PuzzleModal from './PuzzleModal'
-import SuccessOverlay from './SuccessOverlay'
-import TopHintBar from './TopHintBar'
 
 function GameLayout({ level, game }) {
   const currentObjectiveText = game.gameCompleted
@@ -15,10 +12,6 @@ function GameLayout({ level, game }) {
   return (
     <main className="fixed inset-0 h-screen w-screen overflow-hidden text-inkplay">
       <EscapeRoomBoard level={level} game={game} />
-
-      <div className="hint-bar-container">
-        <TopHintBar text={currentObjectiveText} />
-      </div>
 
       <div className="inventory-container">
         <InventoryBar digits={game.collectedDigits} />
@@ -46,8 +39,6 @@ function GameLayout({ level, game }) {
           shake={game.wrongPulse}
         />
       ) : null}
-
-      {game.gameCompleted ? <SuccessOverlay onReplay={game.resetGame} /> : null}
     </main>
   )
 }

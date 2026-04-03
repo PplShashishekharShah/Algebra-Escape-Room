@@ -1,31 +1,67 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 function NarrationSystem({ message, objective, gameCompleted }) {
-  const currentNarration = useMemo(() => {
-    // If the game is won, use a victory message
+  const [displayMessage, setDisplayMessage] = useState("")
+  const isSpeakingRef = useRef(false)
+  const queueRef = useRef([])
+
+  const lastObjectiveSpoken = useRef("")
+
+  // Determine what to show and speak when props change
+  useEffect(() => {
+    const newSequence = []
+    
     if (gameCompleted) {
-      return "Fantastic job! You've solved the equations and escaped the room. See you next time!"
+      newSequence.push("Fantastic job! You've solved the equations and escaped the room. See you next time!")
+    } else {
+      if (message) {
+        newSequence.push(message)
+        // If we have an immediate feedback message, always follow up with current objective
+        if (objective) {
+          newSequence.push(objective)
+          lastObjectiveSpoken.current = objective
+        }
+      } else if (objective && objective !== lastObjectiveSpoken.current) {
+        // Only narrate objective on its own if it has changed
+        newSequence.push(objective)
+        lastObjectiveSpoken.current = objective
+      }
     }
-    
-    // Priority 1: Direct feedback (if provided and visible)
-    if (message) {
-      return message
+
+    if (newSequence.length > 0) {
+      // If there's a new message, we priority-replace the queue
+      if (message) {
+        queueRef.current = newSequence
+      } else {
+        // Otherwise append only if not already in queue
+        queueRef.current = Array.from(new Set([...queueRef.current, ...newSequence]))
+      }
+      processQueue()
     }
-    
-    // Initial welcome or objective narration
-    const baseNarration = "Welcome to the Algebra Escape Room! "
-    return `${baseNarration}${objective}`
   }, [message, objective, gameCompleted])
 
-  useEffect(() => {
-    if (currentNarration) {
-      window.speechSynthesis.cancel() // Stop any previous speech
-      const utterance = new SpeechSynthesisUtterance(currentNarration)
-      utterance.rate = 1.0
-      utterance.pitch = 1.1
-      window.speechSynthesis.speak(utterance)
+  const processQueue = () => {
+    if (isSpeakingRef.current || queueRef.current.length === 0) return
+
+    const nextText = queueRef.current.shift()
+    setDisplayMessage(nextText)
+    isSpeakingRef.current = true
+
+    window.speechSynthesis.cancel() 
+    const utterance = new SpeechSynthesisUtterance(nextText)
+    utterance.rate = 1.0
+    utterance.pitch = 1.1
+    
+    utterance.onend = () => {
+      isSpeakingRef.current = false
+      // If there's more in queue, process it after a small pause
+      if (queueRef.current.length > 0) {
+        setTimeout(processQueue, 500)
+      }
     }
-  }, [currentNarration])
+
+    window.speechSynthesis.speak(utterance)
+  }
 
   return (
     <div className="feedback-rat-container">
@@ -35,7 +71,9 @@ function NarrationSystem({ message, objective, gameCompleted }) {
         className="rat-character"
       />
       <div className="speech-bubble-container">
-        <p className="max-w-[80%] mx-auto leading-tight">{currentNarration}</p>
+        <p className="max-w-[75%] mx-auto leading-tight text-lg font-bold">
+          {displayMessage || "..." }
+        </p>
       </div>
     </div>
   )

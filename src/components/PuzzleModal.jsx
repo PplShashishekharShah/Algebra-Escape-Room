@@ -85,7 +85,7 @@ function PuzzleModal({ objectData, game }) {
               </div>
 
               <div className="mt-auto pt-3 text-[11px] text-inkplay/90 italic">
-                Digits collected unlock the final door code.
+                Digits collection for Code.
               </div>
             </div>
 
