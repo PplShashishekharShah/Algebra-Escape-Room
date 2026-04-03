@@ -21,32 +21,32 @@ function DoorCodePanel({ digits, input, onPadInput, onClear, onSubmit, shake }) 
               key={digit}
               type="button"
               onClick={() => onPadInput(digit)}
-              className="padlock-key"
+              className="padlock-key font-black text-4xl text-white"
             >
-              {}
+              {digit}
             </button>
           ))}
           <button
             type="button"
             onClick={onClear}
-            className="padlock-key"
+            className="padlock-key font-black text-base text-red-500"
           >
-            {}
+            CLR
           </button>
           <button
             key="0"
             type="button"
             onClick={() => onPadInput('0')}
-            className="padlock-key"
+            className="padlock-key font-black text-4xl text-white"
           >
-            {}
+            0
           </button>
           <button
             type="button"
             onClick={onSubmit}
-            className="padlock-key"
+            className="padlock-key font-black text-base text-green-500"
           >
-            {}
+            OK
           </button>
         </div>
 

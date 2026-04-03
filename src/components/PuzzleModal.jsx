@@ -31,33 +31,33 @@ function PuzzleModal({ objectData, game }) {
                 <img
                   src={`/assets/${objectData.asset}`}
                   alt={objectData.label}
-                  className="h-12 w-12 object-contain sm:h-16 sm:w-16"
+                  className="h-12 w-12 object-contain"
                 />
               </div>
               <div className="min-w-0">
-                <h2 className="font-display text-xl text-inkplay sm:text-lg">
+                <h2 className="font-display text-lg text-inkplay leading-tight">
                   Solve the equation to get the key!
                 </h2>
-                <p className="truncate text-xl text-inkplay/80">
+                <p className="truncate text-sm text-inkplay/80">
                   {objectData.label} clue
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="grid h-full max-h-[65vh] gap-3 overflow-hidden lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="puzzle-glass-panel flex flex-col justify-center">
+          <div className="grid h-full max-h-[65vh] gap-3 overflow-hidden lg:grid-cols-[1fr_1fr]">
+            <div className="puzzle-glass-panel flex flex-col justify-center p-3">
               <p className="text-[10px] uppercase tracking-[0.2rem] text-inkplay/70">Equation</p>
-              <p className="mt-1 font-display text-xl text-inkplay sm:text-2xl">
+              <p className="mt-1 font-display text-xl text-inkplay">
                 {objectData.puzzle.question}
               </p>
-              <p className="mt-1 text-[11px] text-inkplay/80">
-                Solve for <span className="font-bold">x</span> and type your answer.
+              <p className="mt-1 text-sm text-inkplay/80 font-bold">
+                Solve for x and type your answer.
               </p>
 
               <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <label
-                  className={`relative block h-14 w-full max-w-[180px] ${game.wrongPulse ? 'animate-shakeSoft' : ''}`}
+                  className={`relative block h-12 w-full max-w-[180px] ${game.wrongPulse ? 'animate-shakeSoft' : ''}`}
                 >
                   <img
                     src="/assets/Input Box.png"
@@ -89,7 +89,7 @@ function PuzzleModal({ objectData, game }) {
               </div>
             </div>
 
-            <div className="puzzle-glass-panel flex flex-col bg-slate-900/60 p-3 text-white shadow-inner sm:p-4">
+            <div className="puzzle-glass-panel flex flex-col bg-slate-900/60 p-3 text-white shadow-inner">
               <div className="flex items-center justify-between gap-2">
                 <h3 className="font-display text-sm sm:text-base">Hint Helper</h3>
                 <div className="flex items-center gap-1.5">
