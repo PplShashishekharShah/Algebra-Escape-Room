@@ -1,0 +1,104 @@
+{
+  "id": "level-2",
+  "name": "Escape Room 2",
+  "doorCode": [3, 7, 6],
+  "objectsOrder": ["frame", "cactus", "carpet"],
+  "objects": [
+    {
+      "id": "frame",
+      "label": "Photo Frame",
+      "asset": "image frame.png",
+      "position": { "x": 123, "y": 31 },
+      "topHintText": "I hang on the wall holding memories... find me.",
+      "digitReward": 3,
+      "puzzle": {
+        "question": "4x - 1 = 11",
+        "answer": 3,
+        "answerType": "number",
+        "hints": [
+          {
+            "level": 1,
+            "type": "text",
+            "content": "Try adding 1 to both sides first."
+          },
+          {
+            "level": 2,
+            "type": "miniQuestion",
+            "question": "4x = 12",
+            "answer": 3,
+            "successMessage": "Great! That's exactly right!"
+          },
+          {
+            "level": 3,
+            "type": "stepReveal",
+            "content": "After adding 1: 4x = 12. Then divide both sides by 4 to get x = 3."
+          }
+        ]
+      }
+    },
+    {
+      "id": "cactus",
+      "label": "Cactus",
+      "asset": "cactus.png",
+      "position": { "x": 1520, "y": 829 },
+      "topHintText": "I am spiky and stand tall in the corner... find me.",
+      "digitReward": 7,
+      "puzzle": {
+        "question": "2(x + 3) = 20",
+        "answer": 7,
+        "answerType": "number",
+        "hints": [
+          {
+            "level": 1,
+            "type": "text",
+            "content": "Try dividing both sides by 2 first."
+          },
+          {
+            "level": 2,
+            "type": "miniQuestion",
+            "question": "x + 3 = 10",
+            "answer": 7,
+            "successMessage": "Excellent! You're on the right track!"
+          },
+          {
+            "level": 3,
+            "type": "stepReveal",
+            "content": "Divide both sides by 2 to get x + 3 = 10. Then subtract 3 to get x = 7."
+          }
+        ]
+      }
+    },
+    {
+      "id": "carpet",
+      "label": "Carpet",
+      "asset": "carpet_on_floor.png",
+      "position": { "x": 845, "y": 901 },
+      "topHintText": "I lie flat on the floor and keep you warm... find me.",
+      "digitReward": 6,
+      "puzzle": {
+        "question": "3x / 2 = 9",
+        "answer": 6,
+        "answerType": "number",
+        "hints": [
+          {
+            "level": 1,
+            "type": "text",
+            "content": "Try multiplying both sides by 2 first."
+          },
+          {
+            "level": 2,
+            "type": "miniQuestion",
+            "question": "3x = 18",
+            "answer": 6,
+            "successMessage": "Nice! Now you have it!"
+          },
+          {
+            "level": 3,
+            "type": "stepReveal",
+            "content": "Multiply both sides by 2: 3x = 18. Then divide both sides by 3 to get x = 6."
+          }
+        ]
+      }
+    }
+  ]
+}

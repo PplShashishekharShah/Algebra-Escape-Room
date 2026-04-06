@@ -1,6 +1,24 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 function DoorCodePanel({ digits, input, onPadInput, onClear, onSubmit, shake, onClose }) {
+  // Global keyboard listener for Enter and numbers
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        onSubmit()
+      } else if (e.key >= '0' && e.key <= '9') {
+        onPadInput(e.key)
+      } else if (e.key === 'Backspace' || e.key === 'Delete') {
+        onClear()
+      } else if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [onPadInput, onClear, onSubmit, onClose])
+
   return (
     <div className="padlock-overlay">
       <div className={`padlock-container ${shake ? 'animate-shakeSoft' : ''}`}>
@@ -12,16 +30,6 @@ function DoorCodePanel({ digits, input, onPadInput, onClear, onSubmit, shake, on
         >
           &times;
         </button>
-
-        <div className="padlock-display">
-          {input.map((digit, index) => (
-            <div key={index} className="padlock-slot">
-              {digit || (
-                <span className="opacity-20">?</span>
-              )}
-            </div>
-          ))}
-        </div>
 
         <div className="padlock-grid">
           {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (

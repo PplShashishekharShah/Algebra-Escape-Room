@@ -7,14 +7,37 @@
   background:
     radial-gradient(circle at top, rgba(255, 243, 173, 0.85), transparent 35%),
     linear-gradient(180deg, #98d8f4 0%, #6e9cc8 38%, #22304e 100%);
-  font-family: "Verdana", ui-sans-serif, system-ui;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  cursor: none !important;
 }
 
 html,
 body,
 * {
   box-sizing: border-box;
-  cursor: url('/assets/hand_emoji.png') 16 16, auto !important;
+}
+
+.door-integrated-slots {
+  position: absolute;
+  left: 64.2%; /* Positioned over the physical door slots in Background Escape Room_2.png */
+  top: 32%;
+  display: flex;
+  gap: 16px;
+  pointer-events: none;
+  z-index: 14;
+}
+
+.door-digit {
+  width: 44px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0,0,0,0.8), 0 0 5px rgba(255,255,255,0.2);
+  /* background: rgba(0,0,0,0.2); */
 }
 
 button, 
@@ -25,7 +48,7 @@ a,
 [role="button"],
 .start-button,
 .how-to-play-button {
-  cursor: url('/assets/hand_emoji.png') 16 16, pointer !important;
+  cursor: none !important;
 }
 
 html,
@@ -37,6 +60,12 @@ body,
 
 body {
   min-height: 100vh;
+}
+
+.room-object-btn:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+  filter: brightness(1.2) drop-shadow(0 15px 30px rgba(0,0,0,0.5));
+  z-index: 50;
 }
 
 button,
@@ -73,13 +102,31 @@ input {
 /* Inventory Bar (Top Right) */
 .inventory-container {
   position: absolute;
-  left: 27rem; /* 8 in tailwind */
-  top: 1rem;   /* 8 in tailwind */
+  left: 25rem;
+  top: 0.5rem;
   z-index: 20;
   width: 14rem;
-  /* max-width: 38rem; */
   pointer-events: none;
-  /* display: none; */
+}
+
+.inventory-bar-wrapper {
+  background: rgba(10, 20, 40, 0.75);
+  border: 2px solid rgba(199, 149, 44, 0.5);
+  border-radius: 1rem;
+  padding: 0.4rem 0.1rem 0.1rem;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.inventory-label {
+  display: block;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #c7952c;
+  margin-bottom: 0.15rem;
 }
 
 /* Door Lock Keypad (Hit Area) */
@@ -99,20 +146,31 @@ input {
 }
 
 .door-lock-button:hover {
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.12);
 }
 
 .door-lock-button.unlocked {
-  background-color: rgba(76, 219, 196, 0.25);
-  box-shadow: 0 0 25px rgba(76, 219, 196, 0.6);
+  background-color: rgba(76, 219, 196, 0.35);
+  box-shadow: 0 0 35px rgba(76, 219, 196, 0.8);
+  animation: doorGlowGreen 1.5s infinite;
 }
 
 .door-lock-button.ready {
-  background-color: rgba(199, 149, 44, 0.2);
+  background-color: rgba(199, 149, 44, 0.35);
+  box-shadow: 0 0 25px rgba(199, 149, 44, 0.7);
+  animation: doorGlowGold 1.5s infinite;
 }
 
-.door-lock-button.ready:hover {
-  background-color: rgba(199, 149, 44, 0.3);
+@keyframes doorGlowGold {
+  0% { box-shadow: 0 0 10px rgba(199, 149, 44, 0.4); }
+  50% { box-shadow: 0 0 45px rgba(199, 149, 44, 0.9); }
+  100% { box-shadow: 0 0 10px rgba(199, 149, 44, 0.4); }
+}
+
+@keyframes doorGlowGreen {
+  0% { box-shadow: 0 0 10px rgba(76, 219, 196, 0.4); }
+  50% { box-shadow: 0 0 45px rgba(76, 219, 196, 0.9); }
+  100% { box-shadow: 0 0 10px rgba(76, 219, 196, 0.4); }
 }
 
 .door-slot-container {
@@ -218,6 +276,21 @@ input {
 .clue-envelope {
   left: 38% !important;
   top: 77% !important;
+}
+
+.clue-frame {
+  left: 9% !important;
+  top: 12% !important;
+}
+
+.clue-cactus {
+  left: 92% !important;
+  top: 70% !important;
+}
+
+.clue-carpet {
+  left: 55% !important;
+  top: 86% !important;
 }
 
 .room-object-btn {
@@ -477,7 +550,7 @@ p, span, div, button, input {
 .feedback-rat-container {
   position: fixed;
   bottom: 42%;
-  left: 12px; /* Far left */
+  left: 30px; /* Far left */
   pointer-events: none;
   z-index: 150;
   display: flex;

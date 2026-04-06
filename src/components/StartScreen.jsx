@@ -3,16 +3,16 @@ import React from 'react'
 function StartScreen({ onStart }) {
   return (
     <div className="start-screen-overlay">
-      <div className="start-screen-content">
+      <div className="start-screen-content border-2 border-white rounded-2xl px-8 py-10 shadow-soft bg-white/5">
         <img 
           src="/assets/Key (Reward Asset).png" 
           alt="Game Icon" 
           className="game-logo mx-auto animate-bounce"
         />
         
-        <h1 className=" font-display text-5xl text-white mb-4 tracking-tight">
+        <p className=" font-display text-5xl text-white mb-4 tracking-tight">
           ALGEBRA ESCAPE ROOM
-        </h1>
+        </p>
         
         <p className="text-xl text-white/80 mb-12 font-medium">
           Crack the clues. Collect the digits. Escape.
@@ -38,7 +38,7 @@ function StartScreen({ onStart }) {
       </div>
       
       <div className="absolute bottom-10 text-white/30 text-xs uppercase tracking-widest">
-        Powered by Advanced Algebra
+        Powered by Playpower Labs
       </div>
     </div>
   )

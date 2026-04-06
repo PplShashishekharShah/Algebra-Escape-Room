@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-function NarrationSystem({ message, objective, gameCompleted }) {
+function NarrationSystem({ message, objective, gameCompleted, gameStarted }) {
   const [displayMessage, setDisplayMessage] = useState("")
   const isSpeakingRef = useRef(false)
   const queueRef = useRef([])
@@ -9,6 +9,8 @@ function NarrationSystem({ message, objective, gameCompleted }) {
 
   // Determine what to show and speak when props change
   useEffect(() => {
+    if (!gameStarted) return
+
     const newSequence = []
     
     if (gameCompleted) {
@@ -17,7 +19,7 @@ function NarrationSystem({ message, objective, gameCompleted }) {
       if (message) {
         newSequence.push(message)
         // If we have an immediate feedback message, always follow up with current objective
-        if (objective) {
+        if (objective && objective !== lastObjectiveSpoken.current) {
           newSequence.push(objective)
           lastObjectiveSpoken.current = objective
         }
@@ -38,7 +40,7 @@ function NarrationSystem({ message, objective, gameCompleted }) {
       }
       processQueue()
     }
-  }, [message, objective, gameCompleted])
+  }, [message, objective, gameCompleted, gameStarted])
 
   const processQueue = () => {
     if (isSpeakingRef.current || queueRef.current.length === 0) return

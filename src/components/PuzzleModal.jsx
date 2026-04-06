@@ -69,6 +69,11 @@ function PuzzleModal({ objectData, game }) {
                     inputMode="numeric"
                     value={game.puzzleAnswer}
                     onChange={(event) => game.setPuzzleAnswer(event.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        game.submitPuzzleAnswer()
+                      }
+                    }}
                     className="hide-number-spin absolute inset-0 bg-transparent px-6 text-center font-display text-lg text-inkplay outline-none"
                     placeholder="?"
                   />
