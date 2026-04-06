@@ -313,6 +313,7 @@ export function useEscapeRoomGame(level) {
     gameCompleted,
     celebrationObjectId,
     isMuted,
+    solvedCount: Object.values(solvedObjects).filter(Boolean).length,
     toggleMute,
     handleObjectClick,
     closePuzzleModal,

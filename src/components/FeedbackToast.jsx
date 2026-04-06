@@ -1,15 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMuted }) {
+function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMuted, solvedCount }) {
   const [displayMessage, setDisplayMessage] = useState("")
   const isSpeakingRef = useRef(false)
   const queueRef = useRef([])
 
   const lastObjectiveSpoken = useRef("")
+  const prevSolvedCount = useRef(0)
 
   // Determine what to show and speak when props change
   useEffect(() => {
     if (!gameStarted) return
+
+    // Reset voice configuration when a clue is solved (clue find)
+    if (solvedCount > prevSolvedCount.current) {
+      lastObjectiveSpoken.current = ""
+      prevSolvedCount.current = solvedCount
+    }
 
     const newSequence = []
     
@@ -20,8 +27,9 @@ function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMut
         newSequence.push({ text: message, silent: false })
         // If we have an immediate feedback message (like an error), always follow up with the objective hint
         if (objective) {
-          // USER FIXED: donot read it by voice if it's a repeat due to wrong clicks
-          newSequence.push({ text: objective, silent: true })
+          // USER FIXED: only silence it if it's a repeat; new objectives should be read
+          const isRepeat = objective === lastObjectiveSpoken.current
+          newSequence.push({ text: objective, silent: isRepeat })
           lastObjectiveSpoken.current = objective
         }
       } else if (objective && objective !== lastObjectiveSpoken.current) {
