@@ -97,6 +97,7 @@ function EscapeRoomBoard({ level, game, onNextLevel, isLevel2 }) {
                 src={`/assets/${asset.asset}`}
                 alt=""
                 className={`room-object-btn clue-${asset.id}`}
+                onClick={() => game.handleObjectClick(asset.id)}
                 style={{ width: asset.width, height: asset.height }}
               />
             )

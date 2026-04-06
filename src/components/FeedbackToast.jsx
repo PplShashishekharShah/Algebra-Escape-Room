@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-function NarrationSystem({ message, objective, gameCompleted, gameStarted }) {
+function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMuted }) {
   const [displayMessage, setDisplayMessage] = useState("")
   const isSpeakingRef = useRef(false)
   const queueRef = useRef([])
@@ -14,18 +14,19 @@ function NarrationSystem({ message, objective, gameCompleted, gameStarted }) {
     const newSequence = []
     
     if (gameCompleted) {
-      newSequence.push("Fantastic job! You've solved the equations and escaped the room. See you next time!")
+      newSequence.push({ text: "Fantastic job! You've solved the equations and escaped the room. See you next time!", silent: false })
     } else {
       if (message) {
-        newSequence.push(message)
-        // If we have an immediate feedback message, always follow up with current objective
-        if (objective && objective !== lastObjectiveSpoken.current) {
-          newSequence.push(objective)
+        newSequence.push({ text: message, silent: false })
+        // If we have an immediate feedback message (like an error), always follow up with the objective hint
+        if (objective) {
+          // USER FIXED: donot read it by voice if it's a repeat due to wrong clicks
+          newSequence.push({ text: objective, silent: true })
           lastObjectiveSpoken.current = objective
         }
       } else if (objective && objective !== lastObjectiveSpoken.current) {
-        // Only narrate objective on its own if it has changed
-        newSequence.push(objective)
+        // Only narrate objective on its own if it has changed (Normal flow)
+        newSequence.push({ text: objective, silent: false })
         lastObjectiveSpoken.current = objective
       }
     }
@@ -36,7 +37,12 @@ function NarrationSystem({ message, objective, gameCompleted, gameStarted }) {
         queueRef.current = newSequence
       } else {
         // Otherwise append only if not already in queue
-        queueRef.current = Array.from(new Set([...queueRef.current, ...newSequence]))
+        const currentTexts = queueRef.current.map(q => q.text)
+        newSequence.forEach(item => {
+          if (!currentTexts.includes(item.text)) {
+            queueRef.current.push(item)
+          }
+        })
       }
       processQueue()
     }
@@ -45,18 +51,28 @@ function NarrationSystem({ message, objective, gameCompleted, gameStarted }) {
   const processQueue = () => {
     if (isSpeakingRef.current || queueRef.current.length === 0) return
 
-    const nextText = queueRef.current.shift()
-    setDisplayMessage(nextText)
-    isSpeakingRef.current = true
+    const { text, silent } = queueRef.current.shift()
+    setDisplayMessage(text)
+    
+    // Check if muted globally or specific fragment is silent
+    if (isMuted || silent || !window.speechSynthesis) {
+      isSpeakingRef.current = true
+      // Just display for a bit, then move to next
+      setTimeout(() => {
+        isSpeakingRef.current = false
+        processQueue()
+      }, 3000)
+      return
+    }
 
+    isSpeakingRef.current = true
     window.speechSynthesis.cancel() 
-    const utterance = new SpeechSynthesisUtterance(nextText)
+    const utterance = new SpeechSynthesisUtterance(text)
     utterance.rate = 1.0
     utterance.pitch = 1.1
     
     utterance.onend = () => {
       isSpeakingRef.current = false
-      // If there's more in queue, process it after a small pause
       if (queueRef.current.length > 0) {
         setTimeout(processQueue, 500)
       }

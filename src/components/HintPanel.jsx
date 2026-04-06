@@ -38,6 +38,11 @@ function HintPanel({
               inputMode="numeric"
               value={miniHintAnswer}
               onChange={(event) => setMiniHintAnswer(event.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  submitMiniHintAnswer()
+                }
+              }}
               className={`hide-number-spin w-full rounded-xl border-2 border-[#1a2a3a]/15 bg-slate-950/35 px-3 py-2 text-base text-white outline-none ring-goldplay/70 transition focus:ring-4 ${
                 shake && !miniSolved ? 'animate-shakeSoft' : ''
               }`}

@@ -22,7 +22,19 @@ function GameLayout({ level, game, gameStarted, onNextLevel, isLevel2 }) {
         objective={currentObjectiveText}
         gameCompleted={game.gameCompleted}
         gameStarted={gameStarted}
+        isMuted={game.isMuted}
       />
+
+      {/* Mute Toggle Button */}
+      <div className="fixed top-4 right-4 z-[300]">
+        <button
+          onClick={game.toggleMute}
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-900/40 text-2xl backdrop-blur-md transition hover:scale-110 active:scale-95 border-2 border-white/20"
+          aria-label={game.isMuted ? "Unmute" : "Mute"}
+        >
+          {game.isMuted ? '🔇' : '🔊'}
+        </button>
+      </div>
 
       {game.showPuzzleModal && game.activePuzzleObject ? (
         <PuzzleModal objectData={game.activePuzzleObject} game={game} />

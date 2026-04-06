@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { getCurrentHint, unlockNextHint } from '../utils/hintHelpers'
 import {
   attemptDoorUnlock,
@@ -45,6 +45,12 @@ export function useEscapeRoomGame(level) {
   const [toastKey, setToastKey] = useState(0)
   const [wrongPulse, setWrongPulse] = useState(false)
   const [celebrationObjectId, setCelebrationObjectId] = useState(null)
+  const [isMuted, setIsMuted] = useState(false)
+
+  // Reset game state when the level changes (e.g. going from Level 1 to Level 2)
+  useEffect(() => {
+    resetGame()
+  }, [level.id])
 
   const currentTargetObject = useMemo(
     () => getCurrentTargetObject(level, solvedObjects),
@@ -83,6 +89,11 @@ export function useEscapeRoomGame(level) {
       type,
       visible: true,
     })
+  }
+
+  function toggleMute() {
+    setIsMuted(prev => !prev)
+    if (window.speechSynthesis) window.speechSynthesis.cancel()
   }
 
   function triggerWrongPulse() {
@@ -301,6 +312,8 @@ export function useEscapeRoomGame(level) {
     wrongPulse,
     gameCompleted,
     celebrationObjectId,
+    isMuted,
+    toggleMute,
     handleObjectClick,
     closePuzzleModal,
     revealHints,
