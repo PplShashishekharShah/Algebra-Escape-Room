@@ -24,6 +24,7 @@ function GameLayout({ level, game, gameStarted, onNextLevel, isLevel2 }) {
         gameStarted={gameStarted}
         isMuted={game.isMuted}
         solvedCount={game.solvedCount}
+        toastKey={game.toastKey}
       />
 
       {/* Mute Toggle Button */}

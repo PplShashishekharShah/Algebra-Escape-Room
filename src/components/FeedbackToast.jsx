@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMuted, solvedCount }) {
+function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMuted, solvedCount, toastKey }) {
   const [displayMessage, setDisplayMessage] = useState("")
   const isSpeakingRef = useRef(false)
   const queueRef = useRef([])
 
   const lastObjectiveSpoken = useRef("")
   const prevSolvedCount = useRef(0)
+  const timeoutRef = useRef(null)
 
   // Determine what to show and speak when props change
   useEffect(() => {
@@ -18,6 +19,24 @@ function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMut
       prevSolvedCount.current = solvedCount
     }
 
+    // DIRECT DISPLAY MODE: When muted, bypass the queue for instant visual feedback
+    if (isMuted) {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+      isSpeakingRef.current = false
+      
+      if (message) {
+        setDisplayMessage(message)
+        // Show message for 3s, then revert to original hint (objective)
+        timeoutRef.current = setTimeout(() => {
+          setDisplayMessage(objective)
+        }, 3000)
+      } else {
+        setDisplayMessage(objective)
+      }
+      return
+    }
+
+    // VOICED MODE: Use the queue system for natural-sounding TTS narration
     const newSequence = []
     
     if (gameCompleted) {
@@ -42,6 +61,8 @@ function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMut
     if (newSequence.length > 0) {
       // If there's a new message, we priority-replace the queue
       if (message) {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current)
+        isSpeakingRef.current = false
         queueRef.current = newSequence
       } else {
         // Otherwise append only if not already in queue
@@ -54,7 +75,7 @@ function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMut
       }
       processQueue()
     }
-  }, [message, objective, gameCompleted, gameStarted])
+  }, [message, objective, gameCompleted, gameStarted, isMuted, toastKey])
 
   const processQueue = () => {
     if (isSpeakingRef.current || queueRef.current.length === 0) return
@@ -66,7 +87,7 @@ function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMut
     if (isMuted || silent || !window.speechSynthesis) {
       isSpeakingRef.current = true
       // Just display for a bit, then move to next
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         isSpeakingRef.current = false
         processQueue()
       }, 3000)
@@ -82,7 +103,7 @@ function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMut
     utterance.onend = () => {
       isSpeakingRef.current = false
       if (queueRef.current.length > 0) {
-        setTimeout(processQueue, 500)
+        timeoutRef.current = setTimeout(processQueue, 500)
       }
     }
 
