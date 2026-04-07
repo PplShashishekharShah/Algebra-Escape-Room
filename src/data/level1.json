@@ -19,19 +19,22 @@
           {
             "level": 1,
             "type": "text",
-            "content": "Try moving +5 to the other side."
+            "content": "Subtract 5 from both sides to remove the constant."
           },
           {
             "level": 2,
             "type": "miniQuestion",
-            "question": "x + 5 = 20",
-            "answer": 15,
-            "successMessage": "Great! Now think about the original equation."
+            "intro": "After subtracting 5 from both sides:",
+            "resultEquation": "3x = 15",
+            "question": "3x = 15",
+            "prompt": "Now solve: what is x?",
+            "answer": 5,
+            "successMessage": "Correct! x = 5 is your key digit."
           },
           {
             "level": 3,
-            "type": "stepReveal",
-            "content": "After subtracting 5 from both sides, the equation becomes 3x = 15."
+            "type": "finalReveal",
+            "content": "x = 5 — that's your key! Enter it as your answer."
           }
         ]
       }
@@ -51,19 +54,22 @@
           {
             "level": 1,
             "type": "text",
-            "content": "Try subtracting 4 from both sides first."
+            "content": "Subtract 4 from both sides to isolate the x term."
           },
           {
             "level": 2,
             "type": "miniQuestion",
-            "question": "x + 4 = 12",
-            "answer": 8,
-            "successMessage": "Nice! Now apply that idea to the real equation."
+            "intro": "After subtracting 4 from both sides:",
+            "resultEquation": "2x = 8",
+            "question": "2x = 8",
+            "prompt": "Now solve: what is x?",
+            "answer": 4,
+            "successMessage": "Correct! x = 4 is your key digit."
           },
           {
             "level": 3,
-            "type": "stepReveal",
-            "content": "After subtracting 4 from both sides, the equation becomes 2x = 8."
+            "type": "finalReveal",
+            "content": "x = 4 — that's your key! Enter it as your answer."
           }
         ]
       }
@@ -83,19 +89,22 @@
           {
             "level": 1,
             "type": "text",
-            "content": "Try subtracting 3 from both sides first."
+            "content": "Subtract 3 from both sides to isolate x / 2."
           },
           {
             "level": 2,
             "type": "miniQuestion",
+            "intro": "After subtracting 3 from both sides:",
+            "resultEquation": "x / 2 = 4",
             "question": "x / 2 = 4",
+            "prompt": "Now solve: what is x?",
             "answer": 8,
-            "successMessage": "Good! You are very close now."
+            "successMessage": "Correct! x = 8 is your key digit."
           },
           {
             "level": 3,
-            "type": "stepReveal",
-            "content": "After subtracting 3 from both sides, the equation becomes x / 2 = 4."
+            "type": "finalReveal",
+            "content": "x = 8 — that's your key! Enter it as your answer."
           }
         ]
       }

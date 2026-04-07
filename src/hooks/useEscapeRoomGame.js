@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { getCurrentHint, unlockNextHint } from '../utils/hintHelpers'
 import {
-  attemptDoorUnlock,
   awardDigitToSlot,
   checkAllPuzzlesSolved,
   getCurrentTargetObject,
@@ -15,8 +14,6 @@ const defaultFeedback = {
   type: 'info',
   visible: false,
 }
-
-const emptyDoorInput = ['', '', '']
 
 function buildInitialSolvedState(level) {
   return level.objectsOrder.reduce((accumulator, objectId) => {
@@ -39,15 +36,14 @@ export function useEscapeRoomGame(level) {
   const [puzzleAnswer, setPuzzleAnswer] = useState('')
   const [miniHintAnswer, setMiniHintAnswer] = useState('')
   const [doorUnlocked, setDoorUnlocked] = useState(false)
-  const [showDoorPanel, setShowDoorPanel] = useState(false)
-  const [doorCodeInput, setDoorCodeInput] = useState(emptyDoorInput)
   const [gameCompleted, setGameCompleted] = useState(false)
   const [toastKey, setToastKey] = useState(0)
   const [wrongPulse, setWrongPulse] = useState(false)
+  const [wrongFlash, setWrongFlash] = useState(false)
   const [celebrationObjectId, setCelebrationObjectId] = useState(null)
   const [isMuted, setIsMuted] = useState(false)
 
-  // Reset game state when the level changes (e.g. going from Level 1 to Level 2)
+  // Reset game state when the level changes
   useEffect(() => {
     resetGame()
   }, [level.id])
@@ -67,6 +63,11 @@ export function useEscapeRoomGame(level) {
     [activePuzzleObject, hintProgress.level],
   )
 
+  const allPuzzlesSolved = useMemo(
+    () => checkAllPuzzlesSolved(solvedObjects),
+    [solvedObjects],
+  )
+
   const playSound = (soundType) => {
     const soundUrls = {
       click: '/assets/sounds/click.mp3',
@@ -75,20 +76,13 @@ export function useEscapeRoomGame(level) {
       unlocked: '/assets/sounds/unlocked.mp3',
       hint: '/assets/sounds/hint.mp3',
     }
-
     const audio = new Audio(soundUrls[soundType])
-    audio.play().catch(() => {
-      // Ignore errors if sound can't be played (common for browsers)
-    })
+    audio.play().catch(() => {})
   }
 
   function flashFeedback(message, type = 'info') {
     setToastKey((previous) => previous + 1)
-    setFeedback({
-      message,
-      type,
-      visible: true,
-    })
+    setFeedback({ message, type, visible: true })
   }
 
   function toggleMute() {
@@ -98,28 +92,30 @@ export function useEscapeRoomGame(level) {
 
   function triggerWrongPulse() {
     setWrongPulse(true)
-    window.clearTimeout(triggerWrongPulse.timeoutId)
-    triggerWrongPulse.timeoutId = window.setTimeout(() => {
+    setWrongFlash(true)
+    if ('vibrate' in navigator) navigator.vibrate(200)
+
+    window.clearTimeout(triggerWrongPulse.pulseTimeoutId)
+    triggerWrongPulse.pulseTimeoutId = window.setTimeout(() => {
       setWrongPulse(false)
     }, 450)
+
+    window.clearTimeout(triggerWrongPulse.flashTimeoutId)
+    triggerWrongPulse.flashTimeoutId = window.setTimeout(() => {
+      setWrongFlash(false)
+    }, 1000)
   }
 
   function openTargetPuzzle(objectId) {
     setActivePuzzleId(objectId)
     setShowPuzzleModal(true)
-    setHintProgress({
-      puzzleId: objectId,
-      level: 0,
-      miniSolved: false,
-    })
+    setHintProgress({ puzzleId: objectId, level: 0, miniSolved: false })
     setPuzzleAnswer('')
     setMiniHintAnswer('')
   }
 
   function handleObjectClick(objectId) {
-    if (gameCompleted) {
-      return
-    }
+    if (gameCompleted) return
 
     if (!isCorrectObjectClick(objectId, currentTargetObject)) {
       flashFeedback('That is not the right clue yet.', 'error')
@@ -134,11 +130,7 @@ export function useEscapeRoomGame(level) {
   function closePuzzleModal() {
     setShowPuzzleModal(false)
     setActivePuzzleId(null)
-    setHintProgress({
-      puzzleId: null,
-      level: 0,
-      miniSolved: false,
-    })
+    setHintProgress({ puzzleId: null, level: 0, miniSolved: false })
     setPuzzleAnswer('')
     setMiniHintAnswer('')
   }
@@ -146,10 +138,7 @@ export function useEscapeRoomGame(level) {
   function revealHints() {
     if (hintProgress.level === 0) {
       playSound('hint')
-      setHintProgress((previous) => ({
-        ...previous,
-        level: 1,
-      }))
+      setHintProgress((previous) => ({ ...previous, level: 1 }))
     }
   }
 
@@ -166,42 +155,36 @@ export function useEscapeRoomGame(level) {
   }
 
   function submitMiniHintAnswer() {
-    if (!currentHint || currentHint.type !== 'miniQuestion') {
-      return
-    }
+    if (!currentHint || currentHint.type !== 'miniQuestion') return
 
     if (checkMiniHintAnswer(currentHint, miniHintAnswer)) {
       playSound('success')
       setHintProgress((previous) => ({
         ...previous,
         miniSolved: true,
+        level: 3, // Auto-advance to level 3
       }))
       flashFeedback(currentHint.successMessage, 'success')
       return
     }
 
     playSound('error')
-    flashFeedback("Almost there. Try the mini-question one more time.", 'error')
+    flashFeedback('Not quite. Try once more!', 'error')
     triggerWrongPulse()
   }
 
   function submitPuzzleAnswer() {
-    if (!activePuzzleObject) {
-      return
-    }
+    if (!activePuzzleObject) return
 
     if (!checkMainAnswer(activePuzzleObject.puzzle, puzzleAnswer)) {
       playSound('error')
-      flashFeedback("Try again - you're close!", 'error')
+      flashFeedback("Try again — you're close!", 'error')
       triggerWrongPulse()
       return
     }
 
     const objectId = activePuzzleObject.id
-    const nextSolvedObjects = {
-      ...solvedObjects,
-      [objectId]: true,
-    }
+    const nextSolvedObjects = { ...solvedObjects, [objectId]: true }
 
     setSolvedObjects(nextSolvedObjects)
     setCollectedDigits((previousDigits) => awardDigitToSlot(level, objectId, previousDigits))
@@ -213,60 +196,22 @@ export function useEscapeRoomGame(level) {
     }, 1200)
 
     const finishedAll = checkAllPuzzlesSolved(nextSolvedObjects)
-
     if (finishedAll) {
-      flashFeedback('Awesome! You found all 3 key digits. Unlock the door!', 'success')
+      flashFeedback('All 3 keys found! Open the door!', 'success')
     } else {
-      flashFeedback('Awesome! You found a key digit.', 'success')
+      flashFeedback('Key digit found!', 'success')
     }
 
     closePuzzleModal()
   }
 
-  function openDoorPanel() {
-    if (!checkAllPuzzlesSolved(solvedObjects)) {
-      flashFeedback('Solve all 3 clues before unlocking the door.', 'info')
+  function openDoor() {
+    if (!allPuzzlesSolved) {
+      flashFeedback('Solve all 3 clues first!', 'info')
       return
     }
-
-    setShowDoorPanel(true)
-  }
-
-  function closeDoorPanel() {
-    setShowDoorPanel(false)
-    setDoorCodeInput(emptyDoorInput)
-  }
-
-  function setDoorDigit(index, value) {
-    const nextDigits = [...doorCodeInput]
-    nextDigits[index] = `${value}`.slice(-1)
-    setDoorCodeInput(nextDigits)
-  }
-
-  function handleDoorPadInput(value) {
-    const nextIndex = doorCodeInput.findIndex((digit) => digit === '')
-    if (nextIndex === -1) {
-      return
-    }
-
-    setDoorDigit(nextIndex, value)
-  }
-
-  function clearDoorInput() {
-    setDoorCodeInput(emptyDoorInput)
-  }
-
-  function verifyDoorCode() {
-    if (!attemptDoorUnlock(doorCodeInput, level.doorCode)) {
-      playSound('error')
-      flashFeedback("That code didn't work yet. Check your key digits.", 'error')
-      triggerWrongPulse()
-      return
-    }
-
     setDoorUnlocked(true)
     setGameCompleted(true)
-    setShowDoorPanel(false)
     playSound('unlocked')
     flashFeedback('You escaped the room!', 'success')
   }
@@ -276,19 +221,14 @@ export function useEscapeRoomGame(level) {
     setCollectedDigits([null, null, null])
     setActivePuzzleId(null)
     setShowPuzzleModal(false)
-    setHintProgress({
-      puzzleId: null,
-      level: 0,
-      miniSolved: false,
-    })
+    setHintProgress({ puzzleId: null, level: 0, miniSolved: false })
     setFeedback(defaultFeedback)
     setPuzzleAnswer('')
     setMiniHintAnswer('')
     setDoorUnlocked(false)
-    setShowDoorPanel(false)
-    setDoorCodeInput(emptyDoorInput)
     setGameCompleted(false)
     setWrongPulse(false)
+    setWrongFlash(false)
     setCelebrationObjectId(null)
   }
 
@@ -304,12 +244,12 @@ export function useEscapeRoomGame(level) {
     setPuzzleAnswer,
     miniHintAnswer,
     setMiniHintAnswer,
-    showDoorPanel,
     doorUnlocked,
-    doorCodeInput,
+    allPuzzlesSolved,
     feedback,
     toastKey,
     wrongPulse,
+    wrongFlash,
     gameCompleted,
     celebrationObjectId,
     isMuted,
@@ -321,12 +261,7 @@ export function useEscapeRoomGame(level) {
     goToNextHint,
     submitMiniHintAnswer,
     submitPuzzleAnswer,
-    openDoorPanel,
-    closeDoorPanel,
-    setDoorDigit,
-    handleDoorPadInput,
-    clearDoorInput,
-    verifyDoorCode,
+    openDoor,
     resetGame,
   }
 }

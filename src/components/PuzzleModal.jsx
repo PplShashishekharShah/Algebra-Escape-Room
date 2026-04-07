@@ -1,6 +1,8 @@
 import HintPanel from './HintPanel'
 
 function PuzzleModal({ objectData, game }) {
+  // Next arrow enabled: we have a hint shown, not yet at level 3,
+  // and if current hint is a miniQuestion it must be solved first
   const nextArrowEnabled =
     game.hintProgress.level > 0 &&
     game.hintProgress.level < 3 &&
@@ -45,19 +47,22 @@ function PuzzleModal({ objectData, game }) {
             </div>
           </div>
 
-          <div className="grid h-full max-h-[65vh] gap-3 overflow-hidden lg:grid-cols-[1fr_1fr]">
-            <div className="puzzle-glass-panel flex flex-col justify-center p-3">
-              <p className="text-[10px] uppercase tracking-[0.2rem] text-inkplay/70">Equation</p>
-              <p className="mt-1 font-display text-xl text-inkplay">
-                {objectData.puzzle.question}
-              </p>
-              <p className="mt-1 text-sm text-inkplay/80 font-bold">
-                Solve for x and type your answer.
-              </p>
+          <div className="grid h-full max-h-[65vh] gap-4 overflow-hidden lg:grid-cols-[40%_60%]">
+            {/* Left — equation + answer input */}
+            <div className="puzzle-glass-panel flex flex-col p-4 ">
+              <div className="mb-4">
+                <p className="text-[10px] uppercase tracking-[0.2rem] text-inkplay/70">Equation</p>
+                <p className="mt-1 font-display text-2xl text-inkplay leading-tight">
+                  {objectData.puzzle.question}
+                </p>
+                <p className="mt-2 text-sm text-inkplay/85 font-bold leading-snug">
+                  Solve for x and enter your answer.
+                </p>
+              </div>
 
-              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="flex">
                 <label
-                  className={`relative block h-12 w-full max-w-[180px] ${game.wrongPulse ? 'animate-shakeSoft' : ''}`}
+                  className={`relative block h-14 w-full max-w-[100px] shrink-0 ${game.wrongPulse ? 'animate-shakeSoft' : ''}`}
                 >
                   <img
                     src="/assets/Input Box.png"
@@ -70,11 +75,9 @@ function PuzzleModal({ objectData, game }) {
                     value={game.puzzleAnswer}
                     onChange={(event) => game.setPuzzleAnswer(event.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        game.submitPuzzleAnswer()
-                      }
+                      if (e.key === 'Enter') game.submitPuzzleAnswer()
                     }}
-                    className="hide-number-spin absolute inset-0 bg-transparent px-6 text-center font-display text-lg text-inkplay outline-none"
+                    className="hide-number-spin absolute inset-0 bg-transparent px-6  text-center font-display text-xl text-inkplay outline-none"
                     placeholder="?"
                   />
                 </label>
@@ -82,26 +85,23 @@ function PuzzleModal({ objectData, game }) {
                 <button
                   type="button"
                   onClick={game.submitPuzzleAnswer}
-                  className="asset-button relative h-12 w-32 shrink-0 text-center font-display text-base text-white transition hover:scale-105"
+                  className="asset-button relati4e h-14 w-full max-w-[160px] shrink-0 text-center font-display text-lg text-white transition hover:scale-105 active:scale-95"
                   style={{ backgroundImage: 'url("/assets/Submit Button.png")' }}
                 >
                   Submit
                 </button>
               </div>
-
-              <div className="mt-auto pt-3 text-[11px] text-inkplay/90 italic">
-                Digits collection for Code.
-              </div>
             </div>
 
-            <div className="puzzle-glass-panel flex flex-col bg-slate-900/60 p-3 text-white shadow-inner">
+            {/* Right — hints */}
+            <div className="puzzle-glass-panel flex flex-col bg-slate-900/60 p-2 text-white shadow-inner">
               <div className="flex items-center justify-between gap-2">
                 <h3 className="font-display text-sm sm:text-base">Hint Helper</h3>
                 <div className="flex items-center gap-1.5">
                   <button
                     type="button"
                     onClick={game.revealHints}
-                    className="asset-button h-10 w-20 transition hover:scale-105"
+                    className="asset-button h-10 w-16 transition hover:scale-105"
                     style={{ backgroundImage: 'url("/assets/Hint Button.png")' }}
                     aria-label="Open hints"
                   />
@@ -123,7 +123,7 @@ function PuzzleModal({ objectData, game }) {
                 </div>
               </div>
 
-              <div className="mt-2 flex-grow overflow-auto">
+              <div className="mt-2 flex-grow ">
                 <HintPanel
                   currentHint={game.currentHint}
                   hintLevel={game.hintProgress.level}

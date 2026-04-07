@@ -35,9 +35,43 @@ body,
   justify-content: center;
   font-size: 2rem;
   font-weight: 900;
-  color: #fff;
-  text-shadow: 0 0 10px rgba(0,0,0,0.8), 0 0 5px rgba(255,255,255,0.2);
-  /* background: rgba(0,0,0,0.2); */
+  text-shadow: 0 0 10px rgba(0,0,0,0.8);
+  transition: all 0.4s;
+}
+
+.door-digit--filled {
+  color: #f5d87a;
+  text-shadow: 0 0 12px rgba(245, 216, 122, 0.9), 0 0 4px rgba(0,0,0,0.8);
+  transform: scale(1.15);
+}
+
+.door-digit--empty {
+  color: rgba(255,255,255,0.25);
+  font-size: 2.5rem;
+}
+
+/* Open Door button */
+.open-door-btn {
+  position: absolute;
+  left: 69.5%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  background: linear-gradient(135deg, #c7952c, #f5d87a);
+  color: #1a2a3a;
+  font-size: 1.1rem;
+  font-weight: 900;
+  padding: 0.65rem 1.8rem;
+  border-radius: 99px;
+  box-shadow: 0 6px 24px rgba(199,149,44,0.6), 0 2px 8px rgba(0,0,0,0.4);
+  cursor: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 2px solid rgba(255,255,255,0.3);
+}
+
+.open-door-btn:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+  box-shadow: 0 10px 36px rgba(199,149,44,0.8);
 }
 
 button, 
@@ -99,35 +133,7 @@ input {
 
 /* Main Hint Bar (Removed) */
 
-/* Inventory Bar (Top Right) */
-.inventory-container {
-  position: absolute;
-  left: 25rem;
-  top: 0.5rem;
-  z-index: 20;
-  width: 14rem;
-  pointer-events: none;
-}
-
-.inventory-bar-wrapper {
-  background: rgba(10, 20, 40, 0.75);
-  border: 2px solid rgba(199, 149, 44, 0.5);
-  border-radius: 1rem;
-  padding: 0.4rem 0.1rem 0.1rem;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-}
-
-.inventory-label {
-  display: block;
-  text-align: center;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: #c7952c;
-  margin-bottom: 0.15rem;
-}
+/* Inventory bar removed — digits shown directly on door slots */
 
 /* Door Lock Keypad (Hit Area) */
 .door-lock-button {
@@ -194,9 +200,9 @@ input {
 
 .puzzle-modal-container {
   position: fixed; /* Fixed to corner */
-  width: 750px; /* Approximately 1/3rd on most screens, or use 35vw */
-  bottom: -70px; 
-  right: -50px;
+  width: 850px; /* Approximately 1/3rd on most screens, or use 35vw */
+  bottom: -80px; 
+  right: -60px;
   max-width: 100%;
   pointer-events: auto;
   z-index: 100;
@@ -206,7 +212,7 @@ input {
 
 .puzzle-content-area {
   position: absolute;
-  inset: 19% 14% 22% 14%; /* Adjusted for better fit */
+  inset: 20% 15% 22% 14%; /* Adjusted for better fit */
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
@@ -215,7 +221,7 @@ input {
 
 .puzzle-content-area h2 {
   font-size: 1.15rem !important; /* Larger font */
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 .puzzle-content-area p {
@@ -229,13 +235,13 @@ input {
 .puzzle-glass-panel {
   background: transparent;
   border-radius: 1.5rem;
-  padding: 1rem;
+  padding: 0.9rem;
 }
 
 .puzzle-close-btn {
   position: absolute;
-  right: 8%;
-  top: 8%;
+  right: 2%;
+  top: 4%;
   z-index: 50;
   display: flex;
   align-items: center;
@@ -344,105 +350,7 @@ p, span, div, button, input {
   color: white !important;
 }
 
-/* Padlock / Door Code Styles */
-.padlock-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none; /* Allow picking clues behind if needed, or we just override in container */
-}
-
-.padlock-container {
-  pointer-events: auto;
-  position: absolute;
-  left: 56%;
-  top: 34%;
-  transform: translate(-50%, -50%);
-  width: 240px; /* Minimum width */
-  background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-  border: 4px solid #8b4513; /* Wooden border */
-  border-radius: 1rem;
-  padding: 1rem 0.5rem; /* Minimum padding */
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  animation: padlockPopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  filter: drop-shadow(0 25px 50px rgba(0,0,0,0.7));
-  box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
-}
-
-.padlock-display {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  padding: 0.75rem;
-}
-
-.padlock-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-  padding: 0.5rem;
-}
-
-.padlock-key {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 1.3rem; /* Smaller font */
-  font-weight: 900;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 54px; /* Shrunk keys */
-  height: 54px;
-  border-radius: 10px;
-  transition: all 0.2s;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-}
-
-.padlock-key:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: scale(1.05);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-.padlock-key:active {
-  transform: scale(0.95);
-  background: #c3922c;
-  color: #1a2a3a;
-}
-.padlock-slot {
-  width: 50px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: #fff !important; /* Ensure white */
-  text-shadow: 0 0 10px rgba(0,0,0,0.8);
-  background: rgba(0,0,0,0.3);
-  border-radius: 4px;
-}
-.padlock-action-btn {
-  position: absolute;
-  bottom: 0px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 200px;
-  height: 45px;
-  background: #c7952c;
-  color: #1a2a3a;
-  border-radius: 99px;
-  font-weight: 900;
-  text-transform: uppercase;
-  z-index: 10;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-}
+/* Padlock / Door Code Styles — removed (door opens via Open Door button) */
 
 /* Start Screen Styles */
 .start-screen-overlay {
@@ -522,10 +430,7 @@ p, span, div, button, input {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes padlockPopIn {
-  from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
+
 
 .animate-popIn {
   animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -592,4 +497,37 @@ p, span, div, button, input {
 @keyframes slideUp {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
+}
+.animate-shakeSoft {
+  animation: shakeSoft 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shakeSoft {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.red-flash-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background-color: rgba(220, 38, 38, 0.4);
+  pointer-events: none;
+  animation: flashRed 1s ease-out forwards;
+}
+
+@keyframes flashRed {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 }

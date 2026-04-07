@@ -2,14 +2,13 @@ import React, { useEffect } from 'react'
 import RoomObject from './RoomObject'
 
 // All assets that always appear in the room, regardless of level.
-// CSS classes (e.g. .clue-book) override exact positions.
 const ALL_ROOM_ASSETS = [
   { id: 'book',     asset: 'Book (Knowledge Object).png',    width: 164, height: 100 },
   { id: 'box',      asset: 'Box (Storage Object).png',       width: 186, height: 124 },
   { id: 'envelope', asset: 'Envelope (Message Object).png',  width: 136, height:  90 },
   { id: 'frame',    asset: 'image frame.png',                width: 120, height: 100 },
   { id: 'cactus',   asset: 'cactus.png',                     width: 220, height: 280 },
-  { id: 'carpet',   asset: 'carpet_on_floor.png',            width: 300, height:  100 },
+  { id: 'carpet',   asset: 'carpet_on_floor.png',            width: 300, height: 100 },
 ]
 
 function EscapeRoomBoard({ level, game, onNextLevel, isLevel2 }) {
@@ -45,7 +44,6 @@ function EscapeRoomBoard({ level, game, onNextLevel, isLevel2 }) {
     }
   }, [game.gameCompleted])
 
-  // Build a quick lookup: which assets are active clues this level
   const activeClueMap = {}
   level.objects.forEach(obj => { activeClueMap[obj.id] = obj })
 
@@ -53,7 +51,7 @@ function EscapeRoomBoard({ level, game, onNextLevel, isLevel2 }) {
     <section className="fixed inset-0 z-0 h-screen w-screen overflow-hidden bg-slate-950">
       <div className="relative h-full w-full">
 
-        {/* Background (switches on victory) */}
+        {/* Background */}
         <img
           src={game.gameCompleted ? '/assets/Escape Room Open.png' : '/assets/Background Escape Room_2_clean.png'}
           alt="Escape room background"
@@ -61,21 +59,37 @@ function EscapeRoomBoard({ level, game, onNextLevel, isLevel2 }) {
         />
 
         <div className="absolute inset-0">
-          {/* Door code digit reflection */}
+          {/* Door key slots — always visible, fill in as keys are earned */}
           {!game.gameCompleted && (
             <div className="door-integrated-slots">
-              {game.doorCodeInput.map((digit, i) => (
-                <div key={i} className="door-digit">{digit || ''}</div>
+              {game.collectedDigits.map((digit, i) => (
+                <div
+                  key={i}
+                  className={`door-digit ${digit !== null ? 'door-digit--filled' : 'door-digit--empty'}`}
+                >
+                  {digit !== null ? digit : '·'}
+                </div>
               ))}
             </div>
           )}
 
-          {/* Always render ALL 6 assets. Active clues are buttons; others are decorative imgs */}
+          {/* Open Door button — appears once all 3 keys collected */}
+          {!game.gameCompleted && game.allPuzzlesSolved && (
+            <button
+              type="button"
+              onClick={game.openDoor}
+              className="open-door-btn animate-pulse"
+              aria-label="Open the door"
+            >
+              🚪 Open Door
+            </button>
+          )}
+
+          {/* Room objects */}
           {!game.gameCompleted && ALL_ROOM_ASSETS.map((asset) => {
             const clueData = activeClueMap[asset.id]
 
             if (clueData) {
-              // This asset is an interactive clue for this level
               return (
                 <RoomObject
                   key={asset.id}
@@ -90,7 +104,6 @@ function EscapeRoomBoard({ level, game, onNextLevel, isLevel2 }) {
               )
             }
 
-            // This asset is just a decorative prop — render at its CSS-defined position
             return (
               <img
                 key={asset.id}
@@ -102,22 +115,6 @@ function EscapeRoomBoard({ level, game, onNextLevel, isLevel2 }) {
               />
             )
           })}
-
-          {/* Door lock hit area */}
-          {!game.gameCompleted && (
-            <button
-              type="button"
-              onClick={game.openDoorPanel}
-              className={`door-lock-button ${
-                game.doorUnlocked
-                  ? 'unlocked'
-                  : game.collectedDigits.every(d => d !== null)
-                    ? 'ready'
-                    : ''
-              }`}
-              aria-label="Door lock"
-            />
-          )}
         </div>
 
         {/* Victory buttons */}
@@ -155,4 +152,3 @@ function EscapeRoomBoard({ level, game, onNextLevel, isLevel2 }) {
 }
 
 export default EscapeRoomBoard
-

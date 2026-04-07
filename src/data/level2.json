@@ -19,19 +19,22 @@
           {
             "level": 1,
             "type": "text",
-            "content": "Try adding 1 to both sides first."
+            "content": "Add 1 to both sides to remove the constant term."
           },
           {
             "level": 2,
             "type": "miniQuestion",
+            "intro": "After adding 1 to both sides:",
+            "resultEquation": "4x = 12",
             "question": "4x = 12",
+            "prompt": "Now solve: what is x?",
             "answer": 3,
-            "successMessage": "Great! That's exactly right!"
+            "successMessage": "Correct! x = 3 is your key digit."
           },
           {
             "level": 3,
-            "type": "stepReveal",
-            "content": "After adding 1: 4x = 12. Then divide both sides by 4 to get x = 3."
+            "type": "finalReveal",
+            "content": "x = 3 — that's your key! Enter it as your answer."
           }
         ]
       }
@@ -51,19 +54,22 @@
           {
             "level": 1,
             "type": "text",
-            "content": "Try dividing both sides by 2 first."
+            "content": "Divide both sides by 2 to simplify the bracket."
           },
           {
             "level": 2,
             "type": "miniQuestion",
+            "intro": "After dividing both sides by 2:",
+            "resultEquation": "x + 3 = 10",
             "question": "x + 3 = 10",
+            "prompt": "Now solve: what is x?",
             "answer": 7,
-            "successMessage": "Excellent! You're on the right track!"
+            "successMessage": "Correct! x = 7 is your key digit."
           },
           {
             "level": 3,
-            "type": "stepReveal",
-            "content": "Divide both sides by 2 to get x + 3 = 10. Then subtract 3 to get x = 7."
+            "type": "finalReveal",
+            "content": "x = 7 — that's your key! Enter it as your answer."
           }
         ]
       }
@@ -83,19 +89,22 @@
           {
             "level": 1,
             "type": "text",
-            "content": "Try multiplying both sides by 2 first."
+            "content": "Multiply both sides by 2 to clear the fraction."
           },
           {
             "level": 2,
             "type": "miniQuestion",
+            "intro": "After multiplying both sides by 2:",
+            "resultEquation": "3x = 18",
             "question": "3x = 18",
+            "prompt": "Now solve: what is x?",
             "answer": 6,
-            "successMessage": "Nice! Now you have it!"
+            "successMessage": "Correct! x = 6 is your key digit."
           },
           {
             "level": 3,
-            "type": "stepReveal",
-            "content": "Multiply both sides by 2: 3x = 18. Then divide both sides by 3 to get x = 6."
+            "type": "finalReveal",
+            "content": "x = 6 — that's your key! Enter it as your answer."
           }
         ]
       }

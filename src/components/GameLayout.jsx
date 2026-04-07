@@ -1,7 +1,5 @@
-import DoorCodePanel from './DoorCodePanel'
 import EscapeRoomBoard from './EscapeRoomBoard'
 import NarrationSystem from './FeedbackToast'
-import InventoryBar from './InventoryBar'
 import PuzzleModal from './PuzzleModal'
 
 function GameLayout({ level, game, gameStarted, onNextLevel, isLevel2 }) {
@@ -12,10 +10,6 @@ function GameLayout({ level, game, gameStarted, onNextLevel, isLevel2 }) {
   return (
     <main className="fixed inset-0 h-screen w-screen overflow-hidden text-inkplay">
       <EscapeRoomBoard level={level} game={game} onNextLevel={onNextLevel} isLevel2={isLevel2} />
-
-      <div className="inventory-container">
-        <InventoryBar digits={game.collectedDigits} />
-      </div>
 
       <NarrationSystem
         message={game.feedback.visible ? game.feedback.message : null}
@@ -32,7 +26,7 @@ function GameLayout({ level, game, gameStarted, onNextLevel, isLevel2 }) {
         <button
           onClick={game.toggleMute}
           className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-900/40 text-2xl backdrop-blur-md transition hover:scale-110 active:scale-95 border-2 border-white/20"
-          aria-label={game.isMuted ? "Unmute" : "Mute"}
+          aria-label={game.isMuted ? 'Unmute' : 'Mute'}
         >
           {game.isMuted ? '🔇' : '🔊'}
         </button>
@@ -42,18 +36,8 @@ function GameLayout({ level, game, gameStarted, onNextLevel, isLevel2 }) {
         <PuzzleModal objectData={game.activePuzzleObject} game={game} />
       ) : null}
 
-      {game.showDoorPanel ? (
-        <DoorCodePanel
-          digits={game.collectedDigits}
-          input={game.doorCodeInput}
-          onClose={game.closeDoorPanel}
-          onInputChange={game.setDoorDigit}
-          onPadInput={game.handleDoorPadInput}
-          onClear={game.clearDoorInput}
-          onSubmit={game.verifyDoorCode}
-          shake={game.wrongPulse}
-        />
-      ) : null}
+      {/* Red Flash Overlay for Wrong Answers */}
+      {game.wrongFlash && <div className="red-flash-overlay" />}
     </main>
   )
 }
