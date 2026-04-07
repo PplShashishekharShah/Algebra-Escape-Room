@@ -51,12 +51,23 @@ function EscapeRoomBoard({ level, game, onNextLevel, isLevel2 }) {
     <section className="fixed inset-0 z-0 h-screen w-screen overflow-hidden bg-slate-950">
       <div className="relative h-full w-full">
 
-        {/* Background */}
-        <img
-          src={game.gameCompleted ? '/assets/Escape Room Open.png' : '/assets/Background Escape Room_2_clean.png'}
-          alt="Escape room background"
-          className="h-full w-full object-cover transition-all duration-1000"
-        />
+        {/* Background (cross-fading for smoothness) */}
+        <div className="absolute inset-0 h-full w-full">
+          <img
+            src="/assets/Background Escape Room_2_clean.png"
+            alt="Escape room closed"
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+              game.gameCompleted ? 'opacity-0' : 'opacity-100'
+            }`}
+          />
+          <img
+            src="/assets/Escape Room Open.png"
+            alt="Escape room open"
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+              game.gameCompleted ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
+        </div>
 
         <div className="absolute inset-0">
           {/* Door key slots — always visible, fill in as keys are earned */}

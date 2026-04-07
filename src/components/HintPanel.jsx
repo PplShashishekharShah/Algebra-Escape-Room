@@ -17,7 +17,7 @@ function HintPanel({
 
   return (
     <div className="max-h-[30vh]">
-      <div className="inline-flex rounded-full bg-white/25 px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-blue-900 font-bold">
+      <div className="inline-flex rounded-full bg-white/1 px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-blue-900 font-bold">
         Hint {hintLevel}
       </div>
 

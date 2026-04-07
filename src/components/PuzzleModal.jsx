@@ -101,7 +101,9 @@ function PuzzleModal({ objectData, game }) {
                   <button
                     type="button"
                     onClick={game.revealHints}
-                    className="asset-button h-10 w-16 transition hover:scale-105"
+                    className={`asset-button h-10 w-16 transition ${
+                      game.hintProgress.level === 0 ? 'animate-hintGlow' : 'hover:scale-105'
+                    }`}
                     style={{ backgroundImage: 'url("/assets/Hint Button.png")' }}
                     aria-label="Open hints"
                   />

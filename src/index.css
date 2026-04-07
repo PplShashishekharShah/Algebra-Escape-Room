@@ -531,3 +531,20 @@ p, span, div, button, input {
   0% { opacity: 1; }
   100% { opacity: 0; }
 }
+
+/* Hint Button Glow Animation */
+.animate-hintGlow {
+  animation: hintGlow 1.5s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 8px rgba(255, 230, 0, 0.8));
+}
+
+@keyframes hintGlow {
+  from {
+    filter: drop-shadow(0 0 4px rgba(255, 230, 0, 0.4));
+    transform: scale(1);
+  }
+  to {
+    filter: drop-shadow(0 0 15px rgba(255, 230, 0, 0.9));
+    transform: scale(1.18);
+  }
+}
