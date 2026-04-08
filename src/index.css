@@ -7,14 +7,15 @@
   background:
     radial-gradient(circle at top, rgba(255, 243, 173, 0.85), transparent 35%),
     linear-gradient(180deg, #98d8f4 0%, #6e9cc8 38%, #22304e 100%);
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   cursor: none !important;
+  user-select: none;
 }
 
 html,
 body,
 * {
   box-sizing: border-box;
+  cursor: none !important;
 }
 
 .door-integrated-slots {
@@ -196,13 +197,16 @@ input {
   justify-content: flex-end;
   
   pointer-events: none;
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.4);
+  transition: all 0.4s ease-out;
 }
 
 .puzzle-modal-container {
   position: fixed; /* Fixed to corner */
-  width: 850px; /* Approximately 1/3rd on most screens, or use 35vw */
-  bottom: -80px; 
-  right: -60px;
+  width: 92vw; /* Approximately 1/3rd on most screens, or use 35vw */
+  bottom: -120px; 
+  right: -90px;
   max-width: 100%;
   pointer-events: auto;
   z-index: 100;
@@ -212,7 +216,7 @@ input {
 
 .puzzle-content-area {
   position: absolute;
-  inset: 20% 15% 22% 14%; /* Adjusted for better fit */
+  inset: 20% 15% 2% 14%; /* Adjusted for better fit */
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
@@ -220,7 +224,7 @@ input {
 }
 
 .puzzle-content-area h2 {
-  font-size: 1.15rem !important; /* Larger font */
+  font-size: 1.25rem !important; /* Larger font */
   margin-bottom: 1px;
 }
 
@@ -240,8 +244,8 @@ input {
 
 .puzzle-close-btn {
   position: absolute;
-  right: 2%;
-  top: 4%;
+  right: 1%;
+  top: 2%;
   z-index: 50;
   display: flex;
   align-items: center;
@@ -548,3 +552,341 @@ p, span, div, button, input {
     transform: scale(1.18);
   }
 }
+
+/* =============================================
+   CRYPTEX ENGINE
+   ============================================= */
+
+.cryptex-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  animation: cryptexPanelEntry 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@keyframes cryptexPanelEntry {
+  0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Live equation display */
+.cryptex-equation-display {
+  background: rgba(10, 15, 35, 0.75);
+  border: 1px solid rgba(245, 216, 122, 0.3);
+  border-radius: 12px;
+  padding: 7px 0px;
+  text-align: center;
+  min-height: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cryptex-eq-text {
+  font-size: 1rem !important;
+  font-weight: 900 !important;
+  color: #f5d87a !important;
+  letter-spacing: 0.06em;
+  animation: cryptexEqChange 0.25s ease-out;
+}
+
+/* Cryptex frame wrapper — uses cryptex_frame.png as backdrop */
+.cryptex-frame-wrapper {
+  position: relative;
+  background-image: url('/assets/cryptex_frame.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  padding: 18px 14px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 360px;
+  
+  left: -5%;
+  width: 110%;
+  scale: 1.01;
+  border-radius: 10px;
+  margin-top: -50px;
+  margin-bottom: -60px;
+}
+
+/* Container for the 7 bar columns */
+.cryptex-bars-container {
+  display: flex;
+  gap: 1px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  /* overflow-x: auto; */
+}
+
+/* Single bar column */
+.cryptex-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 40px; /* Match the drum width exactly */
+  min-width: 40px;
+}
+
+/* Drum face — shows vertical_bar.png texture */
+.cryptex-drum-frame {
+  width: 166px;
+  height: 88px;
+  background-image: url('/assets/vertical_bar.png');
+  background-size: cover;
+  background-position: center;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  scale: 1;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  top: -10.7px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Active bars glow gold */
+.cryptex-bar--active .cryptex-drum-frame {
+  border-color: rgba(245, 216, 122, 0.8);
+  box-shadow: 0 0 15px rgba(245, 216, 122, 0.4);
+}
+
+/* Locked bars are slightly dimmed */
+.cryptex-bar--locked .cryptex-drum-frame {
+  opacity: 0.82;
+}
+
+/* The symbol text inside the drum */
+.cryptex-drum-symbol {
+  font-size: 1.85rem !important;
+  font-weight: 900 !important;
+  color: #ffffff !important;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 2px 4px rgba(0, 0, 0, 0.7);
+  user-select: none;
+  line-height: 1;
+  animation: barChange 0.18s ease-out;
+  position: relative;
+  z-index: 2;
+}
+
+/* Arrow scroll buttons */
+.cryptex-arrow {
+  width: 90%;
+  
+  top: -11px;
+  background: rgba(152, 100, 37, 0.7);
+  border: 2px solid rgba(248, 244, 244, 0.8);
+  border-radius: 100%;
+  color: #ffffff !important;
+  font-size: 1.2rem !important;
+  font-weight: 900 !important;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  line-height: 1;
+  cursor: pointer !important;
+  position: relative;
+  z-index: 10;
+}
+
+.cryptex-arrow:hover {
+  background: rgba(255, 157, 0, 0.5);
+  border-color: #ffffff;
+  transform: scale(1.1) !important;
+}
+
+.cryptex-arrow:active {
+  transform: scale(0.93) !important;
+}
+
+/* Operation buttons row */
+.cryptex-op-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 10px 0;
+  position: relative;
+  z-index: 20;
+  top: -20px;
+  pointer-events: auto;
+}
+
+.cryptex-op-btn {
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 1.2rem !important;
+  font-weight: 900 !important;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 4px solid rgba(0,0,0,0.3);
+  line-height: 1.2;
+  cursor: none !important;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.5), 0 8px 15px rgba(0,0,0,0.4);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.cryptex-op-btn:hover  { transform: translateY(-4px) scale(1.05) !important; filter: brightness(1.2); box-shadow: 0 8px 0 rgba(0,0,0,0.5), 0 12px 20px rgba(0,0,0,0.5); }
+.cryptex-op-btn:active { transform: translateY(2px) scale(0.98) !important; box-shadow: 0 2px 0 rgba(0,0,0,0.5); }
+
+.cryptex-op-btn--mul {
+  background: rgba(34, 197, 94, 0.8) !important;
+  border-color: rgba(34, 197, 94, 1) !important;
+  color: #ffffff !important;
+}
+
+.cryptex-op-btn--div {
+  background: rgba(59, 130, 246, 0.8) !important;
+  border-color: rgba(59, 130, 246, 1) !important;
+  color: #ffffff !important;
+}
+
+.cryptex-op-btn--undo {
+  background: rgba(168, 85, 247, 0.8) !important;
+  border-color: rgba(168, 85, 247, 1) !important;
+  color: #ffffff !important;
+}
+
+/* Divide / operation error message */
+.cryptex-error {
+  background: rgba(239, 68, 68, 0.14);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 0.78rem !important;
+  color: #fca5a5 !important;
+  font-weight: 700 !important;
+  text-align: center;
+  animation: cryptexEqChange 0.25s ease-out;
+}
+
+/* Guidance hint text */
+.cryptex-guidance {
+  font-size: 1rem !important;
+  color: #f5d87a !important;
+  font-weight: 900 !important;
+  text-align: center;
+  font-style: italic;
+  padding: 0 4px;
+  margin-top: 5px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+  animation: slideUpFade 0.5s ease-out;
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Solved state ───────────────────────── */
+.cryptex-solved-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 20px;
+  background: rgba(10, 25, 20, 0.95);
+  border: 2px solid rgba(16, 185, 129, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(16, 185, 129, 0.3);
+  animation: cryptexSolvedEntrance 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes cryptexSolvedEntrance {
+  0% { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.cryptex-solved-sparkle {
+  font-size: 1.8rem !important;
+  animation: sparkleFloat 1.5s ease-in-out infinite alternate;
+  color: #f5d87a !important;
+}
+
+.cryptex-solved-equation {
+  font-size: 2rem !important;
+  font-weight: 900 !important;
+  color: #f5d87a !important;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 20px rgba(245, 216, 122, 0.7);
+}
+
+.cryptex-solved-msg {
+  font-size: 0.9rem !important;
+  color: #6ee7b7 !important;
+  font-weight: 900 !important;
+  margin: 0;
+}
+
+/* Apply Answer button */
+.cryptex-apply-btn {
+  width: 100%;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #c7952c, #f5d87a);
+  color: #1a2a3a !important;
+  font-size: 0.9rem !important;
+  font-weight: 900 !important;
+  border-radius: 10px;
+  text-align: center;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 14px rgba(199, 149, 44, 0.45);
+}
+
+.cryptex-apply-btn:hover {
+  transform: scale(1.03) !important;
+  box-shadow: 0 10px 25px rgba(199, 149, 44, 0.8);
+  filter: brightness(1.1);
+}
+
+/* ── Keyframe animations ─────────────────── */
+
+/* Symbol change — slide in from top */
+@keyframes barChange {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* Equation text update */
+@keyframes cryptexEqChange {
+  from { opacity: 0.4; transform: scale(0.97); }
+  to   { opacity: 1;   transform: scale(1);    }
+}
+
+/* Solved pop-in */
+@keyframes cryptexSolve {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1);    }
+}
+
+/* Sparkle float */
+@keyframes sparkleFloat {
+  from { transform: translateY(0)   rotate(-5deg); }
+  to   { transform: translateY(-4px) rotate(5deg);  }
+}
+
+.hint-final-reveal {
+  background: rgba(10, 15, 35, 0.95);
+  border: 4px solid #f5d87a;
+  color: #f5d87a !important;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.8), inset 0 0 30px rgba(245, 216, 122, 0.15);
+  animation: finalRevealEntrance 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  padding: 1.5rem !important;
+  font-size: 1.25rem !important;
+}
+
+@keyframes finalRevealEntrance {
+  0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+

@@ -23,13 +23,9 @@
           },
           {
             "level": 2,
-            "type": "miniQuestion",
-            "intro": "After adding 1 to both sides:",
-            "resultEquation": "4x = 12",
-            "question": "4x = 12",
-            "prompt": "Now solve: what is x?",
-            "answer": 3,
-            "successMessage": "Correct! x = 3 is your key digit."
+            "type": "cryptex",
+            "initialEquation": { "a": 4, "b": -1, "c": 11 },
+            "target": { "x": 3 }
           },
           {
             "level": 3,

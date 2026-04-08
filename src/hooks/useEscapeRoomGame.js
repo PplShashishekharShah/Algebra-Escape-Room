@@ -31,6 +31,7 @@ export function useEscapeRoomGame(level) {
     puzzleId: null,
     level: 0,
     miniSolved: false,
+    cryptexSolved: false,
   })
   const [feedback, setFeedback] = useState(defaultFeedback)
   const [puzzleAnswer, setPuzzleAnswer] = useState('')
@@ -109,9 +110,13 @@ export function useEscapeRoomGame(level) {
   function openTargetPuzzle(objectId) {
     setActivePuzzleId(objectId)
     setShowPuzzleModal(true)
-    setHintProgress({ puzzleId: objectId, level: 0, miniSolved: false })
+    setHintProgress({ puzzleId: objectId, level: 0, miniSolved: false, cryptexSolved: false })
     setPuzzleAnswer('')
     setMiniHintAnswer('')
+  }
+
+  function markCryptexSolved() {
+    setHintProgress((prev) => ({ ...prev, cryptexSolved: true }))
   }
 
   function handleObjectClick(objectId) {
@@ -130,7 +135,7 @@ export function useEscapeRoomGame(level) {
   function closePuzzleModal() {
     setShowPuzzleModal(false)
     setActivePuzzleId(null)
-    setHintProgress({ puzzleId: null, level: 0, miniSolved: false })
+    setHintProgress({ puzzleId: null, level: 0, miniSolved: false, cryptexSolved: false })
     setPuzzleAnswer('')
     setMiniHintAnswer('')
   }
@@ -221,7 +226,7 @@ export function useEscapeRoomGame(level) {
     setCollectedDigits([null, null, null])
     setActivePuzzleId(null)
     setShowPuzzleModal(false)
-    setHintProgress({ puzzleId: null, level: 0, miniSolved: false })
+    setHintProgress({ puzzleId: null, level: 0, miniSolved: false, cryptexSolved: false })
     setFeedback(defaultFeedback)
     setPuzzleAnswer('')
     setMiniHintAnswer('')
@@ -260,6 +265,7 @@ export function useEscapeRoomGame(level) {
     revealHints,
     goToNextHint,
     submitMiniHintAnswer,
+    markCryptexSolved,
     submitPuzzleAnswer,
     openDoor,
     resetGame,

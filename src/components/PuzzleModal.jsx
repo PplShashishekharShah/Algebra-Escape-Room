@@ -6,7 +6,8 @@ function PuzzleModal({ objectData, game }) {
   const nextArrowEnabled =
     game.hintProgress.level > 0 &&
     game.hintProgress.level < 3 &&
-    (game.currentHint?.type !== 'miniQuestion' || game.hintProgress.miniSolved)
+    (game.currentHint?.type !== 'miniQuestion' || game.hintProgress.miniSolved) &&
+    (game.currentHint?.type !== 'cryptex'      || game.hintProgress.cryptexSolved)
 
   return (
     <div className="puzzle-modal-overlay">
@@ -47,15 +48,15 @@ function PuzzleModal({ objectData, game }) {
             </div>
           </div>
 
-          <div className="grid h-full max-h-[65vh] gap-4 overflow-hidden lg:grid-cols-[40%_60%]">
+          <div className="grid h-full max-h-[65vh] gap-4 overflow-hidden lg:grid-cols-[30%_70%]">
             {/* Left — equation + answer input */}
             <div className="puzzle-glass-panel flex flex-col p-4 ">
               <div className="mb-4">
-                <p className="text-[10px] uppercase tracking-[0.2rem] text-inkplay/70">Equation</p>
-                <p className="mt-1 font-display text-2xl text-inkplay leading-tight">
+                <p className="text-[20px] uppercase tracking-[0.4rem] text-inkplay/80 font-black">Equation</p>
+                <p className="mt-2 font-display text-5xl text-inkplay leading-tight drop-shadow-sm">
                   {objectData.puzzle.question}
                 </p>
-                <p className="mt-2 text-sm text-inkplay/85 font-bold leading-snug">
+                <p className="mt-4 text-base text-inkplay/85 font-bold leading-snug">
                   Solve for x and enter your answer.
                 </p>
               </div>
@@ -134,6 +135,10 @@ function PuzzleModal({ objectData, game }) {
                   submitMiniHintAnswer={game.submitMiniHintAnswer}
                   miniSolved={game.hintProgress.miniSolved}
                   shake={game.wrongPulse}
+                  onCryptexSolved={(x) => {
+                    game.setPuzzleAnswer(String(x))
+                    game.markCryptexSolved()
+                  }}
                 />
               </div>
             </div>

@@ -1,3 +1,5 @@
+import CryptexPanel from './CryptexPanel'
+
 function HintPanel({
   currentHint,
   hintLevel,
@@ -6,6 +8,7 @@ function HintPanel({
   submitMiniHintAnswer,
   miniSolved,
   shake,
+  onCryptexSolved,
 }) {
   if (hintLevel === 0 || !currentHint) {
     return (
@@ -15,11 +18,13 @@ function HintPanel({
     )
   }
 
+  const isCryptex = currentHint?.type === 'cryptex'
+
   return (
-    <div className="max-h-[30vh]">
+    <div className={isCryptex ? 'max-h-none' : 'max-h-[30vh]'}>
       <div className="inline-flex rounded-full bg-white/1 px-2 py-0.5 text-[10px] uppercase tracking-[0.2em] text-blue-900 font-bold">
         Hint {hintLevel}
-      </div>
+     </div>
 
       {/* Level 1 — Strategy tip */}
       {currentHint.type === 'text' && (
@@ -66,9 +71,17 @@ function HintPanel({
         </div>
       )}
 
+      {/* Level 2b — Cryptex interactive panel */}
+      {currentHint.type === 'cryptex' && (
+        <CryptexPanel
+          hint={currentHint}
+          onCryptexSolved={onCryptexSolved}
+        />
+      )}
+
       {/* Level 3 — Final answer reveal */}
       {currentHint.type === 'finalReveal' && (
-        <div className="rounded-xl bg-goldplay/20 border border-goldplay/40 p-3 text-sm leading-relaxed text-[#1a2a3a] font-bold">
+        <div className="hint-final-reveal rounded-xl p-3 text-sm leading-relaxed font-bold">
           🔑 {currentHint.content}
         </div>
       )}
