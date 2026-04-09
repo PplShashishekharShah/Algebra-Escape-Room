@@ -573,7 +573,7 @@ p, span, div, button, input {
 
 /* Live equation display */
 .cryptex-equation-display {
-  background: rgba(10, 15, 35, 0.75);
+  background: #211713d9;
   border: 1px solid rgba(245, 216, 122, 0.3);
   border-radius: 12px;
   padding: 7px 0px;
@@ -847,8 +847,10 @@ p, span, div, button, input {
   font-weight: 900 !important;
   text-align: center;
   font-style: italic;
-  padding: 0 4px;
-  margin-top: 0px;
+  background-color: #211713d9;
+  border-radius: 10px;
+  padding: 10px 40px;
+  margin-top: -5px;
   text-shadow: 0 2px 10px rgba(0,0,0,0.8);
   animation: slideUpFade 0.5s ease-out;
 }

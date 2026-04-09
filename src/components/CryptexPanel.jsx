@@ -104,7 +104,7 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
                 <button type="button" className="cryptex-op-btn cryptex-op-btn--undo" onClick={undo}>↩</button>
               )}
             </div>
-            <p className="text-[10px] text-center font-bold text-white/50 uppercase tracking-widest">Operations</p>
+            <p className="text-[10px] text-center font-bold text-black uppercase tracking-widest">Operations</p>
           </div>
 
           {/* ── Drum bars (Center) ────────────────────── */}
