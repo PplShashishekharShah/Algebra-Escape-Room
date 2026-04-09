@@ -1,24 +1,16 @@
-import HintPanel from './HintPanel'
+import CryptexPanel from './CryptexPanel'
 
 function PuzzleModal({ objectData, game }) {
-  // Next arrow enabled: we have a hint shown, not yet at level 3,
-  // and if current hint is a miniQuestion it must be solved first
-  const nextArrowEnabled =
-    game.hintProgress.level > 0 &&
-    game.hintProgress.level < 3 &&
-    (game.currentHint?.type !== 'miniQuestion' || game.hintProgress.miniSolved) &&
-    (game.currentHint?.type !== 'cryptex'      || game.hintProgress.cryptexSolved)
-
   return (
     <div className="puzzle-modal-overlay">
       <div className="puzzle-modal-container animate-popIn">
         <img
           src="/assets/Puzzle Popup Panel.png"
           alt="Puzzle panel"
-          className="h-auto w-full object-contain"
+          className="h-auto w-full object-contain shadow-2xl"
         />
 
-        <div className="puzzle-content-area">
+        <div className="puzzle-content-area flex flex-col pt-4">
           <button
             type="button"
             onClick={game.closePuzzleModal}
@@ -28,42 +20,44 @@ function PuzzleModal({ objectData, game }) {
             &times;
           </button>
 
-          <div className="flex items-start justify-between gap-4 pr-12">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-white/10 p-2 shadow-sm">
-                <img
-                  src={`/assets/${objectData.asset}`}
-                  alt={objectData.label}
-                  className="h-12 w-12 object-contain"
-                />
+          {/* Top Section Grid */}
+          <div className="grid grid-cols-1 gap-6 px-12 lg:grid-cols-2">
+            {/* Left: Equation Display */}
+            <div className="flex flex-col items-start justify-center text-left">
+              <div className="mb-4 flex items-center gap-4">
+                <div className="rounded-2xl bg-white/10 p-2 shadow-sm shrink-0">
+                  <img
+                    src={`/assets/${objectData.asset}`}
+                    alt={objectData.label}
+                    className="h-10 w-10 object-contain"
+                  />
+                </div>
+                <div>
+                  <h2 className="font-display text-xl text-inkplay leading-tight">
+                    Solve for the key!
+                  </h2>
+                  <p className="text-sm text-inkplay/80">
+                    {objectData.label} clue
+                  </p>
+                </div>
               </div>
-              <div className="min-w-0">
-                <h2 className="font-display text-lg text-inkplay leading-tight">
-                  Solve the equation to get the key!
-                </h2>
-                <p className="truncate text-sm text-inkplay/80">
-                  {objectData.label} clue
-                </p>
-              </div>
+              
+              <p className="text-xl font-black uppercase tracking-[0.4rem] text-inkplay/80">
+                Equation
+              </p>
+              <p className="mt-1 font-display text-7xl text-inkplay leading-tight drop-shadow-md">
+                {objectData.puzzle.question}
+              </p>
             </div>
-          </div>
 
-          <div className="grid h-full max-h-[65vh] gap-4 overflow-hidden lg:grid-cols-[30%_70%]">
-            {/* Left — equation + answer input */}
-            <div className="puzzle-glass-panel flex flex-col p-4 ">
-              <div className="mb-4">
-                <p className="text-[20px] uppercase tracking-[0.4rem] text-inkplay/80 font-black">Equation</p>
-                <p className="mt-2 font-display text-5xl text-inkplay leading-tight drop-shadow-sm">
-                  {objectData.puzzle.question}
-                </p>
-                <p className="mt-4 text-base text-inkplay/85 font-bold leading-snug">
-                  Solve for x and enter your answer.
-                </p>
-              </div>
-
-              <div className="flex">
+            {/* Right: Answer Input + Submit Row */}
+            <div className="flex flex-col items-start justify-center border-l border-inkplay/10 pl-10 text-left lg:items-start lg:text-left">
+              <p className="mb-4 text-lg text-inkplay/90 font-bold leading-snug">
+                Enter your final answer here:
+              </p>
+              <div className="flex items-center gap-4">
                 <label
-                  className={`relative block h-14 w-full max-w-[100px] shrink-0 ${game.wrongPulse ? 'animate-shakeSoft' : ''}`}
+                  className={`relative block h-16 w-32 shrink-0 ${game.wrongPulse ? 'animate-shakeSoft' : ''}`}
                 >
                   <img
                     src="/assets/Input Box.png"
@@ -78,7 +72,7 @@ function PuzzleModal({ objectData, game }) {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') game.submitPuzzleAnswer()
                     }}
-                    className="hide-number-spin absolute inset-0 bg-transparent px-6  text-center font-display text-xl text-inkplay outline-none"
+                    className="hide-number-spin absolute inset-0 bg-transparent px-4 text-center font-display text-2xl text-inkplay outline-none"
                     placeholder="?"
                   />
                 </label>
@@ -86,64 +80,34 @@ function PuzzleModal({ objectData, game }) {
                 <button
                   type="button"
                   onClick={game.submitPuzzleAnswer}
-                  className="asset-button relati4e h-14 w-full max-w-[160px] shrink-0 text-center font-display text-lg text-white transition hover:scale-105 active:scale-95"
+                  className="asset-button relative h-16 w-44 shrink-0 text-center font-display text-xl text-white transition hover:scale-105 active:scale-95"
                   style={{ backgroundImage: 'url("/assets/Submit Button.png")' }}
                 >
                   Submit
                 </button>
               </div>
-            </div>
-
-            {/* Right — hints */}
-            <div className="puzzle-glass-panel flex flex-col bg-slate-900/60 p-2 text-white shadow-inner">
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="font-display text-sm sm:text-base">Hint Helper</h3>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={game.revealHints}
-                    className={`asset-button h-10 w-16 transition ${
-                      game.hintProgress.level === 0 ? 'animate-hintGlow' : 'hover:scale-105'
-                    }`}
-                    style={{ backgroundImage: 'url("/assets/Hint Button.png")' }}
-                    aria-label="Open hints"
-                  />
-
-                  <button
-                    type="button"
-                    disabled={!nextArrowEnabled}
-                    onClick={game.goToNextHint}
-                    className={`asset-button h-10 w-12 transition ${
-                      nextArrowEnabled ? 'hover:scale-105' : 'cursor-not-allowed opacity-60'
-                    }`}
-                    style={{
-                      backgroundImage: `url("/assets/${
-                        nextArrowEnabled ? 'Next Arrow Button.png' : 'Disabled Arrow Button.png'
-                      }")`,
-                    }}
-                    aria-label="Next hint"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-2 flex-grow ">
-                <HintPanel
-                  currentHint={game.currentHint}
-                  hintLevel={game.hintProgress.level}
-                  miniHintAnswer={game.miniHintAnswer}
-                  setMiniHintAnswer={game.setMiniHintAnswer}
-                  submitMiniHintAnswer={game.submitMiniHintAnswer}
-                  miniSolved={game.hintProgress.miniSolved}
-                  shake={game.wrongPulse}
-                  onCryptexSolved={(x) => {
-                    game.setPuzzleAnswer(String(x))
-                    game.markCryptexSolved()
-                  }}
-                />
-              </div>
+              <p className="mt-4 max-w-[300px] text-base text-inkplay/80 font-semibold italic">
+                Use the Cryptex below to simplify the steps...
+              </p>
             </div>
           </div>
+
+          <div className="mt-6 flex w-full flex-col items-center px-8">
+            {/* Cryptex Solver Section (Bottom Center) */}
+            {objectData.puzzle.initialEquation && (
+              <div className="w-full">
+                <CryptexPanel
+                  initialEquation={objectData.puzzle.initialEquation}
+                  onCryptexSolved={(x) => {
+                    game.setPuzzleAnswer(String(x))
+                  }}
+                  onFlashFeedback={game.flashFeedback}
+                />
+              </div>
+            )}
+          </div>
         </div>
+
       </div>
     </div>
   )
