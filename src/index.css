@@ -594,21 +594,21 @@ p, span, div, button, input {
 /* Cryptex frame wrapper — uses cryptex_frame.png as backdrop */
 .cryptex-frame-wrapper {
   position: relative;
-  background-image: url('/assets/cryptex_frame.png');
+  background-image: url('/assets/cryptex_frame1.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
   padding: 18px 14px 16px;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 360px;
+  min-height: 420px;
   
-  left: -5%;
-  width: 110%;
+  left: -5.5%;
+  width: 109%;
   scale: 1.01;
   border-radius: 10px;
-  margin-top: -50px;
-  margin-bottom: -60px;
+  margin-top: -70px;
+  margin-bottom: -95px;
 }
 
 /* Container for the 7 bar columns */
@@ -620,7 +620,7 @@ p, span, div, button, input {
   position: relative;
   z-index: 5;
   width: 100%;
-  /* overflow-x: auto; */
+  
 }
 
 /* Single bar column */
@@ -629,25 +629,26 @@ p, span, div, button, input {
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  width: 40px; /* Match the drum width exactly */
-  min-width: 40px;
+  width: 48px; /* Match the drum width exactly */
+  min-width: 48px;
 }
 
 /* Drum face — shows vertical_bar.png texture */
 .cryptex-drum-frame {
-  width: 166px;
-  height: 88px;
+  width: 186px;
+  height: 108px; /* Keep height as 220px as requested */
   background-image: url('/assets/vertical_bar.png');
   background-size: cover;
-  background-position: center;
+  background-position: center; 
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   display: flex;
   scale: 1;
-  align-items: center;
+  align-items: center; /* Show symbols at the top */
   justify-content: center;
+  /* Center the symbol within the 160px window */
   overflow: hidden;
-  top: -10.7px;
+  top: -13.7px;
   position: relative;
   transition: all 0.3s ease;
 }
@@ -778,7 +779,7 @@ p, span, div, button, input {
   text-align: center;
   font-style: italic;
   padding: 0 4px;
-  margin-top: 5px;
+  margin-top: 0px;
   text-shadow: 0 2px 10px rgba(0,0,0,0.8);
   animation: slideUpFade 0.5s ease-out;
 }
