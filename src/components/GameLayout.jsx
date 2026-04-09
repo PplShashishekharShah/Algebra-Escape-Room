@@ -1,5 +1,5 @@
 import EscapeRoomBoard from './EscapeRoomBoard'
-import NarrationSystem from './FeedbackToast'
+import NarrationSystem from './SpeechBubble'
 import PuzzleModal from './PuzzleModal'
 
 function GameLayout({ level, game, gameStarted, onNextLevel, isLevel2 }) {

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMuted, solvedCount, toastKey }) {
+function SpeechBubble({ message, objective, gameCompleted, gameStarted, isMuted, solvedCount, toastKey }) {
   const [displayMessage, setDisplayMessage] = useState("")
   const isSpeakingRef = useRef(false)
   const queueRef = useRef([])
@@ -8,12 +8,53 @@ function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMut
   const lastObjectiveSpoken = useRef("")
   const prevSolvedCount = useRef(0)
   const timeoutRef = useRef(null)
+  const introPlayedRef = useRef(false)
 
   // Determine what to show and speak when props change
   useEffect(() => {
-    if (!gameStarted) return
+    if (!gameStarted) {
+      introPlayedRef.current = false
+      return
+    }
 
-    // Reset voice configuration when a clue is solved (clue find)
+    // VOICED MODE: Use the queue system for natural-sounding TTS narration
+    const newSequence = []
+
+    // ── Intro Sequence ───────────────────────
+    // Only trigger this once at the exact start of the game
+    if (gameStarted && !introPlayedRef.current) {
+        introPlayedRef.current = true
+        
+        // 1. Welcome Message
+        newSequence.push({ 
+            text: "Welcome to the Algebra Escape Room! I'm your detective partner.", 
+            silent: false 
+        })
+        
+        // 2. Rules Message
+        newSequence.push({ 
+            text: "To escape, you need to find 3 hidden clues. Each clue has an algebra puzzle to solve.", 
+            silent: false 
+        })
+
+        // 3. Goal/Mission Message
+        newSequence.push({ 
+            text: "Let's start!", 
+            silent: false 
+        })
+        
+        // 4. Follow up with the initial clue (the objective)
+        if (objective) {
+            newSequence.push({ text: objective, silent: false })
+            lastObjectiveSpoken.current = objective
+        }
+        
+        queueRef.current = newSequence
+        processQueue()
+        return
+    }
+
+    // Reset voice configuration when a clue is solved
     if (solvedCount > prevSolvedCount.current) {
       lastObjectiveSpoken.current = ""
       prevSolvedCount.current = solvedCount
@@ -26,7 +67,6 @@ function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMut
       
       if (message) {
         setDisplayMessage(message)
-        // Show message for 3s, then revert to original hint (objective)
         timeoutRef.current = setTimeout(() => {
           setDisplayMessage(objective)
         }, 3000)
@@ -35,37 +75,29 @@ function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMut
       }
       return
     }
-
-    // VOICED MODE: Use the queue system for natural-sounding TTS narration
-    const newSequence = []
     
     if (gameCompleted) {
       newSequence.push({ text: "Fantastic job! You've solved the equations and escaped the room. See you next time!", silent: false })
     } else {
       if (message) {
         newSequence.push({ text: message, silent: false })
-        // If we have an immediate feedback message (like an error), always follow up with the objective hint
         if (objective) {
-          // USER FIXED: only silence it if it's a repeat; new objectives should be read
           const isRepeat = objective === lastObjectiveSpoken.current
           newSequence.push({ text: objective, silent: isRepeat })
           lastObjectiveSpoken.current = objective
         }
       } else if (objective && objective !== lastObjectiveSpoken.current) {
-        // Only narrate objective on its own if it has changed (Normal flow)
         newSequence.push({ text: objective, silent: false })
         lastObjectiveSpoken.current = objective
       }
     }
 
     if (newSequence.length > 0) {
-      // If there's a new message, we priority-replace the queue
       if (message) {
         if (timeoutRef.current) clearTimeout(timeoutRef.current)
         isSpeakingRef.current = false
         queueRef.current = newSequence
       } else {
-        // Otherwise append only if not already in queue
         const currentTexts = queueRef.current.map(q => q.text)
         newSequence.forEach(item => {
           if (!currentTexts.includes(item.text)) {
@@ -83,14 +115,12 @@ function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMut
     const { text, silent } = queueRef.current.shift()
     setDisplayMessage(text)
     
-    // Check if muted globally or specific fragment is silent
     if (isMuted || silent || !window.speechSynthesis) {
       isSpeakingRef.current = true
-      // Just display for a bit, then move to next
       timeoutRef.current = setTimeout(() => {
         isSpeakingRef.current = false
         processQueue()
-      }, 3000)
+      }, 3500) // Slightly longer for easier reading
       return
     }
 
@@ -126,4 +156,4 @@ function NarrationSystem({ message, objective, gameCompleted, gameStarted, isMut
   )
 }
 
-export default NarrationSystem
+export default SpeechBubble
