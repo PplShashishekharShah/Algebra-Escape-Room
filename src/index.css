@@ -204,7 +204,7 @@ input {
 
 .puzzle-modal-container {
   position: fixed; /* Fixed to corner */
-  width: 92vw; /* Approximately 1/3rd on most screens, or use 35vw */
+  width: 95vw; /* Approximately 1/3rd on most screens, or use 35vw */
   bottom: -120px; 
   right: -90px;
   max-width: 100%;
@@ -604,12 +604,12 @@ p, span, div, button, input {
   align-items: center;
   min-height: 420px;
   
-  left: -1%;
+  left: 0%;
   width: 112%;
   max-width: 720px;
   scale: 1.15;
   border-radius: 12px;
-  margin-top: -75px;
+  margin-top: -60px;
   margin-bottom: -90px;
   filter: drop-shadow(0 15px 35px rgba(0,0,0,0.6));
 }
