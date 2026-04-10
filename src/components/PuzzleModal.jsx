@@ -25,11 +25,11 @@ function PuzzleModal({ objectData, game }) {
             {/* Left: Equation Display */}
             <div className="flex flex-col items-start justify-center text-left">
               <div className="mb-4 flex items-center gap-4">
-                <div className="rounded-2xl bg-white/10 p-2 shadow-sm shrink-0">
+                <div className="rounded-2xl bg-white/20  shadow-sm shrink-0">
                   <img
                     src={`/assets/${objectData.asset}`}
                     alt={objectData.label}
-                    className="h-10 w-10 object-contain"
+                    className="h-20 w-20 object-contain"
                   />
                 </div>
                 <div>
@@ -45,7 +45,7 @@ function PuzzleModal({ objectData, game }) {
               <p className="text-xl font-black uppercase tracking-[0.4rem] text-inkplay/80">
                 Equation
               </p>
-              <p className="mt-1 font-display text-7xl text-inkplay leading-tight drop-shadow-md">
+              <p className="mt-1 font-display text-8xl text-inkplay leading-tight drop-shadow-lg">
                 {objectData.puzzle.question}
               </p>
             </div>
@@ -80,7 +80,7 @@ function PuzzleModal({ objectData, game }) {
                 <button
                   type="button"
                   onClick={game.submitPuzzleAnswer}
-                  className="asset-button relative h-16 w-44 shrink-0 text-center font-display text-xl text-white transition hover:scale-105 active:scale-95"
+                  className="asset-button relative h-16 w-44 shrink-0 text-center font-display text-[22px] text-white transition hover:scale-105 active:scale-95"
                   style={{ backgroundImage: 'url("/assets/Submit Button.png")' }}
                 >
                   Submit

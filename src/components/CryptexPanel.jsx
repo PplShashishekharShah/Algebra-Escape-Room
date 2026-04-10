@@ -83,31 +83,12 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
 
   return (
     <div className="cryptex-panel">
-      {/* ── Live equation display ─────────────────── */}
-      <div className="cryptex-equation-display">
-        <span key={formatEquation(equation)} className="cryptex-eq-text">
-          {formatEquation(equation)}
-        </span>
-      </div>
+      {/* Removed Redundant Equation Display */}
+      
 
       <div className="cryptex-main-layout flex flex-col items-center justify-center gap-8">
         <div className={`cryptex-content-group ${isSolved ? 'cryptex-content-group--solved' : ''}`}>
-          {/* ── Operation buttons (Left Side) ─────────── */}
-          <div className="cryptex-op-sidebar flex flex-col gap-3">
-            <div className="grid grid-cols-2 gap-2">
-              <button type="button" className="cryptex-op-btn cryptex-op-btn--mul" onClick={() => handleMultiply(2)}>×2</button>
-              <button type="button" className="cryptex-op-btn cryptex-op-btn--mul" onClick={() => handleMultiply(3)}>×3</button>
-              <button type="button" className="cryptex-op-btn cryptex-op-btn--div" onClick={() => handleDivide(2)}>÷2</button>
-              <button type="button" className="cryptex-op-btn cryptex-op-btn--div" onClick={() => handleDivide(3)}>÷3</button>
-              <button type="button" className="cryptex-op-btn cryptex-op-btn--div" onClick={() => handleDivide(4)}>÷4</button>
-              {history.length > 0 && (
-                <button type="button" className="cryptex-op-btn cryptex-op-btn--undo" onClick={undo}>↩</button>
-              )}
-            </div>
-            <p className="text-[10px] text-center font-bold text-black uppercase tracking-widest">Operations</p>
-          </div>
-
-          {/* ── Drum bars (Center) ────────────────────── */}
+          {/* ── Drum bars (Left) ────────────────────── */}
           <div className="cryptex-frame-wrapper">
             <div className="cryptex-bars-container">
               {bars.map((bar) => (
@@ -119,6 +100,25 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
                   onScrollDown={bar.key === 'const' ? handleScrollDown : undefined}
                 />
               ))}
+            </div>
+          </div>
+
+          {/* ── Operation buttons (Right Side) ─────────── */}
+          <div className="cryptex-op-sidebar flex flex-col gap-4">
+            <p className="text-xl text-center font-black text-[#222] uppercase tracking-[0.35em] mb-2 drop-shadow-md">Operations</p>
+            <div className="grid grid-cols-2 gap-3">
+              <button type="button" className="cryptex-op-btn cryptex-op-btn--mul" onClick={() => handleMultiply(2)}>x2</button>
+              <button type="button" className="cryptex-op-btn cryptex-op-btn--mul" onClick={() => handleMultiply(3)}>x3</button>
+              <button type="button" className="cryptex-op-btn cryptex-op-btn--div" onClick={() => handleDivide(2)}>÷2</button>
+              <button type="button" className="cryptex-op-btn cryptex-op-btn--div" onClick={() => handleDivide(3)}>÷3</button>
+              <button 
+                type="button" 
+                className="cryptex-op-btn cryptex-op-btn--undo col-span-2 disabled:opacity-50 disabled:grayscale disabled:pointer-events-none" 
+                onClick={undo}
+                disabled={history.length === 0}
+              >
+                Undo
+              </button>
             </div>
           </div>
         </div>
