@@ -72,7 +72,7 @@ function PuzzleModal({ objectData, game }) {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') game.submitPuzzleAnswer()
                     }}
-                    className="hide-number-spin absolute inset-0 bg-transparent px-4 text-center font-display text-2xl text-inkplay outline-none"
+                    className={`hide-number-spin absolute inset-0 bg-transparent px-4 text-center font-display text-2xl text-inkplay outline-none ${game.puzzleAnswer && !game.wrongPulse ? 'animate-vibrateSuccess' : ''}`}
                     placeholder="?"
                   />
                 </label>

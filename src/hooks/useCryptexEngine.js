@@ -3,18 +3,30 @@ import { useState } from 'react'
 export function useCryptexEngine(initialEquation) {
   const [equation, setEquation] = useState(initialEquation)
   const [history, setHistory] = useState([])
+  const [addCount, setAddCount] = useState(0)
+  const MAX_ADD_OPS = 50
 
   // Solved when a===1 and b===0  →  x = c
   const isSolved = equation.a === 1 && equation.b === 0
 
   /** Add delta to both b and c (constant-term operation). */
   function applyAdd(delta) {
-    setHistory((prev) => [...prev, equation])
+    // Only block if we are trying to go further past the limit
+    if (delta > 0 && addCount >= MAX_ADD_OPS && !isSolved) {
+      return { error: `Maximum increment of ${MAX_ADD_OPS} reached!` }
+    }
+    if (delta < 0 && addCount <= -MAX_ADD_OPS && !isSolved) {
+      return { error: `Maximum decrement of ${MAX_ADD_OPS} reached!` }
+    }
+
+    setHistory((prev) => [...prev, { ...equation, _opType: 'add', _bDelta: delta }])
     setEquation((prev) => ({
       ...prev,
       b: prev.b + delta,
       c: prev.c + delta,
     }))
+    setAddCount(prev => prev + delta)
+    return null
   }
 
   /** Multiply every term by factor. */
@@ -59,7 +71,11 @@ export function useCryptexEngine(initialEquation) {
   /** Undo the last operation. */
   function undo() {
     if (history.length === 0) return
-    setEquation(history[history.length - 1])
+    const lastState = history[history.length - 1]
+    if (lastState._opType === 'add') {
+      setAddCount(prev => prev - (lastState._bDelta || 1))
+    }
+    setEquation(lastState)
     setHistory((prev) => prev.slice(0, -1))
   }
 
@@ -67,6 +83,7 @@ export function useCryptexEngine(initialEquation) {
   function reset() {
     setEquation(initialEquation)
     setHistory([])
+    setAddCount(0)
   }
 
   return {

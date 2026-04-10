@@ -66,11 +66,22 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
     ]
   }
 
+  const [isApplied, setIsApplied] = useState(false)
+  
   /* Scroll handlers: ▲ adds 1, ▼ subtracts 1 from b (and c) */
-  function handleScrollUp()   { applyAdd(+1) }
-  function handleScrollDown() { applyAdd(-1) }
+  function handleScrollUp()   { 
+    if (isApplied) return
+    const result = applyAdd(+1) 
+    if (result?.error && onFlashFeedback) onFlashFeedback(result.error, 'error')
+  }
+  function handleScrollDown() { 
+    if (isApplied) return
+    const result = applyAdd(-1) 
+    if (result?.error && onFlashFeedback) onFlashFeedback(result.error, 'error')
+  }
 
   function handleDivide(factor) {
+    if (isApplied) return
     const result = applyDivide(factor)
     if (result?.error && onFlashFeedback) {
       onFlashFeedback(result.error, 'error')
@@ -78,7 +89,18 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
   }
 
   function handleMultiply(factor) {
+    if (isApplied) return
     applyMultiply(factor)
+  }
+
+  function handleApply() {
+    if (isApplied) return
+    
+    // Vibration effect
+    if ('vibrate' in navigator) navigator.vibrate([100, 50, 100])
+    
+    setIsApplied(true)
+    onCryptexSolved(c)
   }
 
   return (
@@ -96,8 +118,8 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
                   key={bar.key}
                   symbol={bar.symbol}
                   isLocked={bar.isLocked}
-                  onScrollUp={bar.key === 'const' ? handleScrollUp : undefined}
-                  onScrollDown={bar.key === 'const' ? handleScrollDown : undefined}
+                  onScrollUp={bar.key === 'const' && !isApplied ? handleScrollUp : undefined}
+                  onScrollDown={bar.key === 'const' && !isApplied ? handleScrollDown : undefined}
                 />
               ))}
             </div>
@@ -107,15 +129,15 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
           <div className="cryptex-op-sidebar flex flex-col gap-4">
             <p className="text-xl text-center font-black text-[#222] uppercase tracking-[0.35em] mb-2 drop-shadow-md">Operations</p>
             <div className="grid grid-cols-2 gap-3">
-              <button type="button" className="cryptex-op-btn cryptex-op-btn--mul" onClick={() => handleMultiply(2)}>x2</button>
-              <button type="button" className="cryptex-op-btn cryptex-op-btn--mul" onClick={() => handleMultiply(3)}>x3</button>
-              <button type="button" className="cryptex-op-btn cryptex-op-btn--div" onClick={() => handleDivide(2)}>÷2</button>
-              <button type="button" className="cryptex-op-btn cryptex-op-btn--div" onClick={() => handleDivide(3)}>÷3</button>
+              <button disabled={isApplied} type="button" className="cryptex-op-btn cryptex-op-btn--mul" onClick={() => handleMultiply(2)}>x2</button>
+              <button disabled={isApplied} type="button" className="cryptex-op-btn cryptex-op-btn--mul" onClick={() => handleMultiply(3)}>x3</button>
+              <button disabled={isApplied} type="button" className="cryptex-op-btn cryptex-op-btn--div" onClick={() => handleDivide(2)}>÷2</button>
+              <button disabled={isApplied} type="button" className="cryptex-op-btn cryptex-op-btn--div" onClick={() => handleDivide(3)}>÷3</button>
               <button 
                 type="button" 
                 className="cryptex-op-btn cryptex-op-btn--undo col-span-2 disabled:opacity-50 disabled:grayscale disabled:pointer-events-none" 
                 onClick={undo}
-                disabled={history.length === 0}
+                disabled={history.length === 0 || isApplied}
               >
                 Undo
               </button>
@@ -128,15 +150,17 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
           <div className="flex flex-col items-center justify-center p-12">
             <button
               type="button"
-              className="cryptex-apply-btn animate-bounceSoft shadow-lg"
-              onClick={() => onCryptexSolved(c)}
+              className={`cryptex-apply-btn shadow-lg ${isApplied ? 'opacity-50 grayscale pointer-events-none' : 'animate-bounceSoft'}`}
+              onClick={handleApply}
+              disabled={isApplied}
             >
-              Apply Answer → fill x = {c}
+              {isApplied ? `Applied x = ${c}` : `Apply Answer → fill x = ${c}`}
             </button>
             <p className="mt-4 text-white font-display text-xl">Equation Solved!</p>
           </div>
         )}
       </div>
+
 
       {/* ── Guidance ───────────────────── */}
       <div className="mt-4 flex flex-col items-center">
