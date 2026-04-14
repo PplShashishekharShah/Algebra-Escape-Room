@@ -126,6 +126,23 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback, onSta
   }, [equation, onStateChange])
 
   /* Build dynamic bars based on equation structure */
+  const [showSimplified, setShowSimplified] = useState(b === 0)
+  const [isVanishing, setIsVanishing] = useState(false)
+
+  useEffect(() => {
+    if (b === 0 && !showSimplified) {
+      // Transition from complex to simplified
+      setIsVanishing(true)
+      const timer = setTimeout(() => {
+        setShowSimplified(true)
+        setIsVanishing(false)
+      }, 500)
+      return () => clearTimeout(timer)
+    } else if (b !== 0) {
+      setShowSimplified(false)
+    }
+  }, [b, showSimplified])
+
   const sign = b >= 0 ? '+' : '−'
   const absB = Math.abs(b)
   
@@ -133,7 +150,7 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback, onSta
   if (a < 1) {
     // Structure: [x] [/] [2] [+] [3] [=] [7]
     const denom = Math.round(1/a)
-    if (b === 0) {
+    if (showSimplified) {
       // Simplified: [x] [/] [2] [=] [7]
       bars = [
         { key: 'x',        symbol: 'x',            isLocked: true },
@@ -147,8 +164,8 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback, onSta
         { key: 'x',        symbol: 'x',            isLocked: true },
         { key: 'div',      symbol: '/',            isLocked: true },
         { key: 'denom',    symbol: String(denom),  isLocked: true },
-        { key: 'sign',     symbol: sign,           isLocked: true },
-        { key: 'const',    symbol: String(absB),   isLocked: false },
+        { key: 'sign',     symbol: sign,           isLocked: true, className: isVanishing ? 'cryptex-bar-vanishing' : '' },
+        { key: 'const',    symbol: String(absB),   isLocked: false, className: isVanishing ? 'cryptex-bar-vanishing' : '' },
         { key: 'eq',       symbol: '=',            isLocked: true },
         { key: 'rhs',      symbol: String(c),      isLocked: true },
       ]
@@ -158,7 +175,7 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback, onSta
     const tensC = Math.floor(Math.abs(c) / 10)
     const onesC = Math.abs(c) % 10
     
-    if (b === 0) {
+    if (showSimplified) {
       // Simplified: [3] [x] [=] [2] [0]
       bars = [
         { key: 'coeff',    symbol: a === 1 ? '' : String(a), isLocked: true },
@@ -171,8 +188,8 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback, onSta
       bars = [
         { key: 'coeff',    symbol: a === 1 ? '' : String(a), isLocked: true },
         { key: 'x',        symbol: 'x',            isLocked: true },
-        { key: 'sign',     symbol: sign,           isLocked: true },
-        { key: 'const',    symbol: String(absB),   isLocked: false },
+        { key: 'sign',     symbol: sign,           isLocked: true, className: isVanishing ? 'cryptex-bar-vanishing' : '' },
+        { key: 'const',    symbol: String(absB),   isLocked: false, className: isVanishing ? 'cryptex-bar-vanishing' : '' },
         { key: 'eq',       symbol: '=',            isLocked: true },
         { key: 'rhs-tens', symbol: tensC > 0 ? String(tensC) : ' ', isLocked: true },
         { key: 'rhs-ones', symbol: String(onesC),  isLocked: true },
@@ -254,6 +271,7 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback, onSta
                   key={bar.key}
                   symbol={bar.symbol}
                   isLocked={bar.isLocked}
+                  className={bar.className}
                   onScrollUp={bar.key === 'const' && !isApplied ? handleScrollUp : undefined}
                   onScrollDown={bar.key === 'const' && !isApplied ? handleScrollDown : undefined}
                 />

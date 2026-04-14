@@ -822,7 +822,9 @@ p, span, div, button, input {
   height: 60px;
   top: -50px;
   right: 44px;
+.operator-pin-wrapper:not(.operator-pin--disabled) {
   transition: all 0.2s cubic-bezier(0.175,0.885,0.32,1.275);
+}
   transform-origin: right center;
   pointer-events: none; /* Let the hitbox handle interaction */
 }
@@ -927,9 +929,10 @@ p, span, div, button, input {
   color: #5a0000 !important;
 }
 
-.operator-pin:hover {
-  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.8)) brightness(1.2);
-  /* Removed scale enhancement on hover as requested */
+.operator-pin-wrapper:not(.operator-pin--disabled):hover .operator-pin__img {
+  filter: brightness(1.2) drop-shadow(0 0 12px rgba(245, 216, 122, 0.6));
+  transform: rotate(180deg) scale(1.05); /* Slight visual feedback */
+  transition: all 0.3s ease;
 }
 
 .operator-pin--pressed {
@@ -938,9 +941,9 @@ p, span, div, button, input {
 }
 
 .operator-pin--disabled {
-  opacity: 0.45;
-  filter: grayscale(0.7) brightness(0.7);
+  /* Keep colors when x is found, but disable interaction */
   pointer-events: none;
+  cursor: default !important;
 }
 
 /* ── Standalone Undo Button ─────────────────────────── */
@@ -1125,4 +1128,18 @@ p, span, div, button, input {
   100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
+/* Animation for constant removal (vanishing effect) */
+.cryptex-bar-vanishing {
+  animation: barVanish 0.5s ease-in forwards;
+}
 
+@keyframes barVanish {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.1); filter: brightness(2); }
+  100% { opacity: 0; transform: scale(0); }
+}
+
+/* Ensure equation text change is smooth */
+.cryptex-eq-text {
+  transition: all 0.3s ease;
+}

@@ -1,4 +1,4 @@
-function CryptexBar({ symbol, isLocked, onScrollUp, onScrollDown }) {
+function CryptexBar({ symbol, isLocked, onScrollUp, onScrollDown, className }) {
   /* Mechanical click sound effect using Web Audio API */
   const playClick = () => {
     try {
@@ -29,7 +29,7 @@ function CryptexBar({ symbol, isLocked, onScrollUp, onScrollDown }) {
   }
 
   return (
-    <div className={`cryptex-bar ${isLocked ? 'cryptex-bar--locked' : 'cryptex-bar--active'}`}>
+    <div className={`cryptex-bar ${isLocked ? 'cryptex-bar--locked' : 'cryptex-bar--active'} ${className || ''}`}>
       {/* Up button — only for active bars */}
       {!isLocked && (
         <button
