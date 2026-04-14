@@ -213,7 +213,7 @@ input {
 
 .puzzle-content-area {
   position: absolute;
-  inset: 20% 15% 2% 14%; /* Adjusted for better fit */
+  inset: 22% 15% 2% 14%; /* Adjusted for better fit */
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
@@ -607,7 +607,7 @@ p, span, div, button, input {
   border-radius: 12px;
   margin-top: -90px; /* Adjusted to give space below equation display */
   margin-bottom: 10px;
-  right: 120px;
+  right: 130px;
   filter: drop-shadow(0 15px 35px rgba(0,0,0,0.6));
   z-index: 5;
 }
@@ -1015,6 +1015,7 @@ p, span, div, button, input {
   background: linear-gradient(90deg, transparent, #211713d9 20%, #211713d9 80%, transparent);
   border-radius: 12px;
   padding: 12px 60px;
+  display: none;
   margin-top: -80px;
   text-shadow: 0 2px 10px rgba(0,0,0,0.9);
   animation: slideUpFade 0.5s ease-out;

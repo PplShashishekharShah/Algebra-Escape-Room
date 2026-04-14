@@ -30,9 +30,9 @@ function PuzzleModal({ objectData, game }) {
           {/* Top Section Grid */}
           <div className="grid grid-cols-1 gap-6 px-12 lg:grid-cols-2">
             {/* Left: Equation Display */}
-            <div className="flex flex-col items-start justify-center text-left">
-              <div className="mb-4 flex items-center gap-4">
-                <div className="rounded-2xl bg-white/20  shadow-sm shrink-0">
+            <div className="flex flex-col items-start justify-center text-left mb-8">
+              <div className="flex items-center gap-6">
+                <div className="rounded-2xl bg-white/20 shadow-sm shrink-0">
                   <img
                     src={`/assets/${objectData.asset}`}
                     alt={objectData.label}
@@ -48,40 +48,38 @@ function PuzzleModal({ objectData, game }) {
                   </p>
                 </div>
               </div>
-              
-              <div className="flex items-center gap-8">
-                <div className="flex flex-col min-h-[120px] justify-center">
-                  <p className="text-xl font-black uppercase tracking-[0.4rem] text-inkplay/80">
-                    Equation
-                  </p>
-                  <p className="mt-1 font-display text-8xl text-inkplay leading-tight drop-shadow-lg">
-                    {objectData.puzzle.question}
-                  </p>
-                </div>
 
-                {/* Feedback Text Section */}
-                {isPhase1Complete && (
-                  <>
-                    <div className="h-24 w-px bg-inkplay/20" /> {/* Vertical Line Separator */}
-                    <div className="flex flex-col justify-center max-w-[300px] animate-fadeIn" style={{marginLeft:"-10px"}}>
-                      <p className="text-lg font-bold text-inkplay leading-snug">
-                        - You have removed the constant by {operation} {bAbs} from both side.
-                      </p>
-                      <p className="text-sm text-inkplay/70 italic font-semibold">
-                        - Now do the below operations to isolate 'x'.
-                      </p>
-                    </div>
-                  </>
-                )}
-              </div>
+              {/* Feedback Text Section (Moved to Left) */}
+              {isPhase1Complete ? (
+                <div className="mt-4  flex flex-col justify-center animate-fadeIn bg-white/20 rounded-lg p-4">
+                  <p className="text-lg font-bold text-inkplay leading-tight">
+                    -Succesfully removed constant by  {operation} {bAbs} <br />from both side.
+                  </p>
+                  <p className="text-base text-inkplay/70 font-semibold ">
+                    -Now, Use operations below to isolate 'x'.
+                  </p>
+                </div>) : <div className='mt-10 h-[70px] '>
+                  <p className='text-lg font-bold text-inkplay leading-tight bg-white/20 rounded-lg p-4'>Use the Cryptex below to simplify the steps...</p>
+                </div> }
+              
             </div>
 
             {/* Right: Answer Input + Submit Row */}
-            <div className="flex flex-col items-start justify-center border-l border-inkplay/10 pl-10 text-left lg:items-start lg:text-left">
-              <p className="mb-4 text-lg text-inkplay/90 font-bold leading-snug">
+            <div className="flex flex-col items-start justify-center border-l border-inkplay/10 pl-10 text-left">
+              {/* Equation Display (Moved from Left) */}
+              <div className="mb-6 flex flex-col justify-center" style={{marginTop:"-40px"}}>
+                <p className="text-base font-black uppercase tracking-[0.3rem] text-inkplay/70">
+                  Equation:-
+                </p>
+                <p className="font-display text-7xl text-inkplay leading-tight drop-shadow-md">
+                        {objectData.puzzle.question}
+                </p>
+                <p className="mt-2 text-lg text-inkplay/90 font-bold leading-snug">
                 Enter your final answer here:
-              </p>
-              <div className="flex items-center gap-4">
+                </p>
+              </div>
+
+              <div style={{marginTop:"-30px"}} className="flex items-center gap-4">
                 <label
                   className={`relative block h-16 w-32 shrink-0 ${game.wrongPulse ? 'animate-shakeSoft' : ''}`}
                 >
@@ -106,15 +104,11 @@ function PuzzleModal({ objectData, game }) {
                 <button
                   type="button"
                   onClick={game.submitPuzzleAnswer}
-                  className="asset-button relative h-16 w-44 shrink-0 text-center font-display text-[22px] text-white transition hover:scale-105 active:scale-95"
-                  style={{ backgroundImage: 'url("/assets/Submit Button.png")' }}
+                  className="asset-button relative h-24 w-44 shrink-0 text-center font-display text-[22px] text-white transition hover:scale-105 active:scale-95 cursor-pointer "
+                  style={{ backgroundImage: 'url("/assets/submit_btn.png")', marginLeft:"-40px", marginTop:"9px" }}
                 >
-                  Submit
                 </button>
               </div>
-              <p className="mt-4 max-w-[300px] text-base text-inkplay/80 font-semibold italic">
-                Use the Cryptex below to simplify the steps...
-              </p>
             </div>
           </div>
 
