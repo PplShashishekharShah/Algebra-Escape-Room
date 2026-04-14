@@ -50,6 +50,35 @@ function playMechanicalClick() {
   } catch (e) { /* ignore sound errors if blocked by browser */ }
 }
 
+function playSuccessSound() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext
+    if (!AudioCtx) return
+    const ctx = new AudioCtx()
+    
+    // Play a rising chime
+    const playNote = (freq, time, duration) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(freq, time)
+      gain.gain.setValueAtTime(0, time)
+      gain.gain.linearRampToValueAtTime(0.1, time + 0.05)
+      gain.gain.exponentialRampToValueAtTime(0.001, time + duration)
+      osc.start(time)
+      osc.stop(time + duration)
+    }
+    
+    const now = ctx.currentTime
+    playNote(440, now, 0.5) // A4
+    playNote(554.37, now + 0.1, 0.5) // C#5
+    playNote(659.25, now + 0.2, 0.5) // E5
+    playNote(880, now + 0.3, 0.8) // A5
+  } catch (e) { }
+}
+
 function OperatorPin({ label, onClick, disabled, colorClass, tooltip }) {
   const [pressed, setPressed] = useState(false)
 
@@ -57,37 +86,46 @@ function OperatorPin({ label, onClick, disabled, colorClass, tooltip }) {
     if (disabled || pressed) return
     playMechanicalClick()
     setPressed(true)
-    setTimeout(() => setPressed(false), 1000)
+    setTimeout(() => setPressed(false), 200)
     onClick()
   }
 
   return (
-    <button
-      type="button"
-      className={`operator-pin ${colorClass} ${disabled ? 'operator-pin--disabled' : ''} ${pressed ? 'operator-pin--pressed' : ''}`}
-      onClick={handleClick}
-      disabled={disabled || pressed}
-      title={tooltip}
-      aria-label={tooltip}
-    >
-      {/* Pin image — rotated 180° so oval face is on right (toward cryptex) */}
-      <span className="operator-pin__label">{label}</span>
+    <div className={`operator-pin-wrapper ${colorClass} ${disabled ? 'operator-pin--disabled' : ''} ${pressed ? 'operator-pin--pressed' : ''}`}>
+      {/* Visual Pin image — rotated 180° */}
       <img
         src="/assets/operator_pin.png"
         alt=""
         className="operator-pin__img"
-        style={{ transform: 'rotate(180deg) scaleY(1)' }}
       />
-    </button>
+      
+      {/* Label overlaid on the oval face */}
+      <span className="operator-pin__label">{label}</span>
+
+      {/* HITBOX BUTTON - Positioned exactly over the oval head */}
+      <button
+        type="button"
+        className="operator-pin__hitbox"
+        onClick={handleClick}
+        disabled={disabled || pressed}
+        title={tooltip}
+        aria-label={tooltip}
+      />
+    </div>
   )
 }
 
-function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
+function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback, onStateChange }) {
   const engine = useCryptexEngine(initialEquation)
   const { equation, isSolved, history, applyAdd, applyDivide, applyMultiply, undo } = engine
   const { a, b, c } = equation
 
-  /* Build dynamic 7 bars based on equation structure */
+  // Notify parent of state changes (for feedback text)
+  useEffect(() => {
+    if (onStateChange) onStateChange(equation)
+  }, [equation, onStateChange])
+
+  /* Build dynamic bars based on equation structure */
   const sign = b >= 0 ? '+' : '−'
   const absB = Math.abs(b)
   
@@ -95,29 +133,51 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
   if (a < 1) {
     // Structure: [x] [/] [2] [+] [3] [=] [7]
     const denom = Math.round(1/a)
-    bars = [
-      { key: 'x',        symbol: 'x',            isLocked: true },
-      { key: 'div',      symbol: '/',            isLocked: true },
-      { key: 'denom',    symbol: String(denom),  isLocked: true },
-      { key: 'sign',     symbol: sign,           isLocked: true },
-      { key: 'const',    symbol: String(absB),   isLocked: false },
-      { key: 'eq',       symbol: '=',            isLocked: true },
-      { key: 'rhs',      symbol: String(c),      isLocked: true },
-    ]
+    if (b === 0) {
+      // Simplified: [x] [/] [2] [=] [7]
+      bars = [
+        { key: 'x',        symbol: 'x',            isLocked: true },
+        { key: 'div',      symbol: '/',            isLocked: true },
+        { key: 'denom',    symbol: String(denom),  isLocked: true },
+        { key: 'eq',       symbol: '=',            isLocked: true },
+        { key: 'rhs',      symbol: String(c),      isLocked: true },
+      ]
+    } else {
+      bars = [
+        { key: 'x',        symbol: 'x',            isLocked: true },
+        { key: 'div',      symbol: '/',            isLocked: true },
+        { key: 'denom',    symbol: String(denom),  isLocked: true },
+        { key: 'sign',     symbol: sign,           isLocked: true },
+        { key: 'const',    symbol: String(absB),   isLocked: false },
+        { key: 'eq',       symbol: '=',            isLocked: true },
+        { key: 'rhs',      symbol: String(c),      isLocked: true },
+      ]
+    }
   } else {
     // Structure: [3] [x] [+] [5] [=] [2] [0] 
     const tensC = Math.floor(Math.abs(c) / 10)
     const onesC = Math.abs(c) % 10
     
-    bars = [
-      { key: 'coeff',    symbol: a === 1 ? '' : String(a), isLocked: true },
-      { key: 'x',        symbol: 'x',            isLocked: true },
-      { key: 'sign',     symbol: sign,           isLocked: true },
-      { key: 'const',    symbol: String(absB),   isLocked: false },
-      { key: 'eq',       symbol: '=',            isLocked: true },
-      { key: 'rhs-tens', symbol: tensC > 0 ? String(tensC) : ' ', isLocked: true },
-      { key: 'rhs-ones', symbol: String(onesC),  isLocked: true },
-    ]
+    if (b === 0) {
+      // Simplified: [3] [x] [=] [2] [0]
+      bars = [
+        { key: 'coeff',    symbol: a === 1 ? '' : String(a), isLocked: true },
+        { key: 'x',        symbol: 'x',            isLocked: true },
+        { key: 'eq',       symbol: '=',            isLocked: true },
+        { key: 'rhs-tens', symbol: tensC > 0 ? String(tensC) : ' ', isLocked: true },
+        { key: 'rhs-ones', symbol: String(onesC),  isLocked: true },
+      ]
+    } else {
+      bars = [
+        { key: 'coeff',    symbol: a === 1 ? '' : String(a), isLocked: true },
+        { key: 'x',        symbol: 'x',            isLocked: true },
+        { key: 'sign',     symbol: sign,           isLocked: true },
+        { key: 'const',    symbol: String(absB),   isLocked: false },
+        { key: 'eq',       symbol: '=',            isLocked: true },
+        { key: 'rhs-tens', symbol: tensC > 0 ? String(tensC) : ' ', isLocked: true },
+        { key: 'rhs-ones', symbol: String(onesC),  isLocked: true },
+      ]
+    }
   }
 
   const [isApplied, setIsApplied] = useState(false)
@@ -125,9 +185,10 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
   // Auto-apply when equation is solved
   useEffect(() => {
     if (isSolved && !isApplied) {
+      playSuccessSound()
       const timer = setTimeout(() => {
         handleApply()
-      }, 500) // Small delay for visual satisfaction
+      }, 300) // Longer delay to enjoy the sparkle/sound
       return () => clearTimeout(timer)
     }
   }, [isSolved, isApplied])
@@ -179,10 +240,14 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
     <div className="cryptex-panel">
 
       <div className="cryptex-main-layout flex flex-col items-center justify-center gap-8">
-        <div className={`cryptex-content-group ${isSolved ? 'cryptex-content-group--solved' : ''}`}>
+        <div className={`cryptex-content-group ${isSolved ? 'cryptex-content-group--solved-sparkle' : ''}`}>
 
           {/* ── Drum bars ────────────────────── */}
           <div className="cryptex-frame-wrapper">
+            {/* Sparkles on both sides */}
+            <img src="/assets/sparkel_effect.png" alt="" className="cryptex-sparkle cryptex-sparkle--left" />
+            <img src="/assets/sparkel_effect.png" alt="" className="cryptex-sparkle cryptex-sparkle--right" />
+
             <div className="cryptex-bars-container">
               {bars.map((bar) => (
                 <CryptexBar

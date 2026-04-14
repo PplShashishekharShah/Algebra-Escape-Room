@@ -1,6 +1,13 @@
+import { useState } from 'react'
 import CryptexPanel from './CryptexPanel'
 
 function PuzzleModal({ objectData, game }) {
+  const [currentB, setCurrentB] = useState(objectData.puzzle.initialEquation.b)
+  
+  const isPhase1Complete = currentB === 0
+  const originalB = objectData.puzzle.initialEquation.b
+  const bAbs = Math.abs(originalB)
+  const operation = originalB > 0 ? 'subtracting' : 'adding'
   return (
     <div className="puzzle-modal-overlay">
       <div className="puzzle-modal-container animate-popIn">
@@ -42,12 +49,31 @@ function PuzzleModal({ objectData, game }) {
                 </div>
               </div>
               
-              <p className="text-xl font-black uppercase tracking-[0.4rem] text-inkplay/80">
-                Equation
-              </p>
-              <p className="mt-1 font-display text-8xl text-inkplay leading-tight drop-shadow-lg">
-                {objectData.puzzle.question}
-              </p>
+              <div className="flex items-center gap-8">
+                <div className="flex flex-col min-h-[120px] justify-center">
+                  <p className="text-xl font-black uppercase tracking-[0.4rem] text-inkplay/80">
+                    Equation
+                  </p>
+                  <p className="mt-1 font-display text-8xl text-inkplay leading-tight drop-shadow-lg">
+                    {objectData.puzzle.question}
+                  </p>
+                </div>
+
+                {/* Feedback Text Section */}
+                {isPhase1Complete && (
+                  <>
+                    <div className="h-24 w-px bg-inkplay/20" /> {/* Vertical Line Separator */}
+                    <div className="flex flex-col justify-center max-w-[300px] animate-fadeIn" style={{marginLeft:"-10px"}}>
+                      <p className="text-lg font-bold text-inkplay leading-snug">
+                        - You have removed the constant by {operation} {bAbs} from both side.
+                      </p>
+                      <p className="text-sm text-inkplay/70 italic font-semibold">
+                        - Now do the below operations to isolate 'x'.
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
 
             {/* Right: Answer Input + Submit Row */}
@@ -101,6 +127,7 @@ function PuzzleModal({ objectData, game }) {
                   onCryptexSolved={(x) => {
                     game.setPuzzleAnswer(String(x))
                   }}
+                  onStateChange={(eq) => setCurrentB(eq.b)}
                   onFlashFeedback={game.flashFeedback}
                 />
               </div>
