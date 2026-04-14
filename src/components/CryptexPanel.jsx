@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import CryptexBar from './CryptexBar'
 import { useCryptexEngine } from '../hooks/useCryptexEngine'
 
@@ -22,9 +22,64 @@ function getGuidance({ a, b }) {
     const op = a < 1 ? 'multiply' : 'divide'
     const factor = a < 1 ? Math.round(1/a) : a
     const symbol = a < 1 ? '×' : '÷'
-    return `💡 Now use a ${symbol} button to ${op} both sides by ${factor}`
+    return `💡 Now use a ${symbol} pin to ${op} both sides by ${factor}`
   }
   return `🎉 You isolated x — apply your answer!`
+}
+
+/* ─── Operator Pin component ───────────────────────────── */
+/* The pin image has: oval face (left), pin stem → cylinder cap (right).
+   We rotate it 180° so the oval face is on the RIGHT side of the pin,
+   pointing INTO the cryptex from the left. */
+
+function playMechanicalClick() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext
+    if (!AudioCtx) return
+    const ctx = new AudioCtx()
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    osc.type = 'square'
+    osc.frequency.setValueAtTime(60, ctx.currentTime)
+    gain.gain.setValueAtTime(0.06, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12)
+    osc.start()
+    osc.stop(ctx.currentTime + 0.12)
+  } catch (e) { /* ignore sound errors if blocked by browser */ }
+}
+
+function OperatorPin({ label, onClick, disabled, colorClass, tooltip }) {
+  const [pressed, setPressed] = useState(false)
+
+  const handleClick = () => {
+    if (disabled || pressed) return
+    playMechanicalClick()
+    setPressed(true)
+    setTimeout(() => setPressed(false), 1000)
+    onClick()
+  }
+
+  return (
+    <button
+      type="button"
+      className={`operator-pin ${colorClass} ${disabled ? 'operator-pin--disabled' : ''} ${pressed ? 'operator-pin--pressed' : ''}`}
+      onClick={handleClick}
+      disabled={disabled || pressed}
+      title={tooltip}
+      aria-label={tooltip}
+    >
+      {/* Pin image — rotated 180° so oval face is on right (toward cryptex) */}
+      <span className="operator-pin__label">{label}</span>
+      <img
+        src="/assets/operator_pin.png"
+        alt=""
+        className="operator-pin__img"
+        style={{ transform: 'rotate(180deg) scaleY(1)' }}
+      />
+    </button>
+  )
 }
 
 function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
@@ -51,7 +106,6 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
     ]
   } else {
     // Structure: [3] [x] [+] [5] [=] [2] [0] 
-    // If c is single digit, we might shift or pad. Let's stick to c as one or two bars.
     const tensC = Math.floor(Math.abs(c) / 10)
     const onesC = Math.abs(c) % 10
     
@@ -67,6 +121,16 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
   }
 
   const [isApplied, setIsApplied] = useState(false)
+
+  // Auto-apply when equation is solved
+  useEffect(() => {
+    if (isSolved && !isApplied) {
+      const timer = setTimeout(() => {
+        handleApply()
+      }, 500) // Small delay for visual satisfaction
+      return () => clearTimeout(timer)
+    }
+  }, [isSolved, isApplied])
   
   /* Scroll handlers: ▲ adds 1, ▼ subtracts 1 from b (and c) */
   function handleScrollUp()   { 
@@ -103,14 +167,21 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
     onCryptexSolved(c)
   }
 
+  // The 4 operator pins that attach to the left side of the cryptex
+  const pins = [
+    { label: '×2', onClick: () => handleMultiply(2), colorClass: 'operator-pin--mul', tooltip: 'Multiply both sides by 2' },
+    { label: '×3', onClick: () => handleMultiply(3), colorClass: 'operator-pin--mul', tooltip: 'Multiply both sides by 3' },
+    { label: '÷2', onClick: () => handleDivide(2),   colorClass: 'operator-pin--div', tooltip: 'Divide both sides by 2' },
+    { label: '÷3', onClick: () => handleDivide(3),   colorClass: 'operator-pin--div', tooltip: 'Divide both sides by 3' },
+  ]
+
   return (
     <div className="cryptex-panel">
-      {/* Removed Redundant Equation Display */}
-      
 
       <div className="cryptex-main-layout flex flex-col items-center justify-center gap-8">
         <div className={`cryptex-content-group ${isSolved ? 'cryptex-content-group--solved' : ''}`}>
-          {/* ── Drum bars (Left) ────────────────────── */}
+
+          {/* ── Drum bars ────────────────────── */}
           <div className="cryptex-frame-wrapper">
             <div className="cryptex-bars-container">
               {bars.map((bar) => (
@@ -125,28 +196,42 @@ function CryptexPanel({ initialEquation, onCryptexSolved, onFlashFeedback }) {
             </div>
           </div>
 
-          {/* ── Operation buttons (Right Side) ─────────── */}
-          <div className="cryptex-op-sidebar flex flex-col gap-4">
-            <p className="text-xl text-center font-black text-[#222] uppercase tracking-[0.35em] mb-2 drop-shadow-md">Operations</p>
-            <div className="grid grid-cols-2 gap-3">
-              <button disabled={isApplied} type="button" className="cryptex-op-btn cryptex-op-btn--mul" onClick={() => handleMultiply(2)}>x2</button>
-              <button disabled={isApplied} type="button" className="cryptex-op-btn cryptex-op-btn--mul" onClick={() => handleMultiply(3)}>x3</button>
-              <button disabled={isApplied} type="button" className="cryptex-op-btn cryptex-op-btn--div" onClick={() => handleDivide(2)}>÷2</button>
-              <button disabled={isApplied} type="button" className="cryptex-op-btn cryptex-op-btn--div" onClick={() => handleDivide(3)}>÷3</button>
-              <button 
-                type="button" 
-                className="cryptex-op-btn cryptex-op-btn--undo col-span-2 disabled:opacity-50 disabled:grayscale disabled:pointer-events-none" 
-                onClick={undo}
-                disabled={history.length === 0 || isApplied}
-              >
-                Undo
-              </button>
-            </div>
+          {/* ── Vertical Connector (Mediator) ───────────────── */}
+          <div className="cryptex-vertical-connector">
+            <img src="/assets/vertical connector.png" alt="" />
+          </div>
+
+          {/* ── Operator Pins (Right of cryptex) ────────────────── */}
+          <div className="cryptex-pin-rail">
+            {/* <p className="pin-rail-label">Ops</p> */}
+            {pins.map((pin) => (
+              <OperatorPin
+                key={pin.label}
+                label={pin.label}
+                onClick={pin.onClick}
+                disabled={isApplied}
+                colorClass={pin.colorClass}
+                tooltip={pin.tooltip}
+              />
+            ))}
           </div>
         </div>
 
-        {/* ── Apply Answer (Right or Overlay when solved) ────────────── */}
-        {isSolved && (
+        {/* ── Undo Button (Now placed below cryptex within main group to prevent overlap) ─────────── */}
+        {!isSolved && (
+          <button
+            type="button"
+            className="cryptex-undo-btn disabled:opacity-40 disabled:grayscale disabled:pointer-events-none"
+            onClick={engine.undo}
+            disabled={engine.history.length === 0 || isApplied}
+            title="Undo last operation"
+          >
+            ↩ Undo
+          </button>
+        )}
+
+        {/* ── Apply Answer (Now hidden as we auto-apply) ────────────────────────────── */}
+        {isSolved && false && (
           <div className="flex flex-col items-center justify-center p-12">
             <button
               type="button"
